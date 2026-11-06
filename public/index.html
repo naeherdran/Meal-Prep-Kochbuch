@@ -1,367 +1,1087 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meal-Prep & Gewichtstracker</title>
-  <style>
-    :root {
-      --bg: #121814;
-      --card: #1e2620;
-      --accent: #2e7d32;
-      --accent-hover: #388e3c;
-      --text: #e8f5e9;
-      --text-sub: #a5d6a7;
-      --border: #2c3b2e;
-      --danger: #c62828;
-    }
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 20px;
-      line-height: 1.5;
-    }
-    .container { max-width: 800px; margin: 0 auto; }
-    h1, h2, h3 { color: var(--text); }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    details summary {
-      cursor: pointer;
-      font-weight: bold;
-      color: var(--text-sub);
-    }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 15px; }
-    label { display: block; font-size: 0.85rem; color: var(--text-sub); margin-bottom: 5px; }
-    input[type="text"], input[type="password"], input[type="number"] {
-      width: 100%;
-      padding: 8px;
-      background: #141a15;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: #fff;
-      box-sizing: border-box;
-    }
-    button {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    button:hover { background: var(--accent-hover); }
-    .status { margin-top: 10px; font-size: 0.9rem; font-weight: bold; }
-    .status.ok { color: #81c784; }
-    .status.err { color: #e57373; }
-    .status.sync { color: #64b5f6; }
-    ul { list-style: none; padding: 0; }
-    li { margin-bottom: 8px; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unser veganes Meal-Prep-Kochbuch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F5EF; --surface:#FFFFFF; --ink:#1D2822; --muted:#56655C; --line:#D5DDD3;
+  --leaf:#2E6A4E; --leaf-soft:#E1EEE5; --sea:#1D5C75; --sea-soft:#DFEDF3;
+  --sun:#9A5B0C; --sun-soft:#FBEBD2; --sunbar:#E9A23B; --plate:#FFFFFF;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121A16; --surface:#19231E; --ink:#E4ECE6; --muted:#9DAFA4; --line:#2C3A33;
+    --leaf:#7DC59D; --leaf-soft:#1F3328; --sea:#86C0D8; --sea-soft:#16303B;
+    --sun:#F2BA66; --sun-soft:#3A2B14; --sunbar:#D6912C; --plate:#E9ECE6; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121A16; --surface:#19231E; --ink:#E4ECE6; --muted:#9DAFA4; --line:#2C3A33;
+  --leaf:#7DC59D; --leaf-soft:#1F3328; --sea:#86C0D8; --sea-soft:#16303B;
+  --sun:#F2BA66; --sun-soft:#3A2B14; --sunbar:#D6912C; --plate:#E9ECE6; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-size:1.0625rem;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+h1,h2,h3,h4,nav,.meta,.code,table,.chip,.amt,.btnlike{font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--sea)}
+a:focus-visible,summary:focus-visible{outline:3px solid var(--sea);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 1.25rem}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:.25rem;overflow-x:auto;padding-top:.6rem;padding-bottom:.6rem;scrollbar-width:none}
+nav a{flex:none;text-decoration:none;color:var(--ink);font-weight:600;font-size:.95rem;padding:.35rem .75rem;border-radius:999px}
+nav a:hover{background:var(--leaf-soft)}
+/* Hero */
+.hero{padding:3.5rem 0 2.5rem}
+.hero h1{font-size:clamp(2.4rem,7vw,4.6rem);line-height:1;letter-spacing:-.02em;margin:0 0 1rem;font-weight:800;max-width:14ch}
+.hero p.lead{max-width:60ch;color:var(--muted);font-size:1.15rem;margin:0 0 2rem}
+.split-bar{display:grid;grid-template-columns:2fr 3fr;border-radius:14px;overflow:hidden;min-height:120px;font-family:"Bricolage Grotesque",system-ui,sans-serif}
+.split-bar>div{padding:1rem 1.25rem;display:flex;flex-direction:column;justify-content:flex-end}
+.split-bar .s{background:var(--sea);color:var(--bg)}
+.split-bar .e{background:var(--sunbar);color:#2A1A05}
+.split-bar b{font-size:clamp(1.8rem,5vw,3rem);line-height:1;font-weight:800}
+.split-bar span{font-size:.95rem}
+.hero .caption{color:var(--muted);font-size:.95rem;margin-top:.75rem;max-width:70ch}
+section{padding:2.5rem 0;border-top:1px solid var(--line)}
+section>.wrap>h2{font-size:clamp(1.7rem,4vw,2.4rem);margin:0 0 .5rem;letter-spacing:-.01em}
+.intro{max-width:68ch;color:var(--muted);margin:0 0 1.5rem}
+h3{font-size:1.3rem;line-height:1.25;margin:0}
+h4{font-size:1rem;margin:0 0 .5rem}
+p{margin:0 0 .8rem}
+/* Ziele */
+.goals{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
+.goal{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.25rem;border-top:6px solid var(--sea)}
+.goal.er{border-top-color:var(--sunbar)}
+.goal .big{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:2.2rem;font-weight:800;line-height:1.1}
+.goal .big small{font-size:1rem;font-weight:600;color:var(--muted)}
+.goal ul{padding-left:1.1rem;margin:.75rem 0 0}
+.goal li{margin-bottom:.3rem}
+.note.start{margin:0 0 1.25rem;background:var(--sea-soft)}
+.note{background:var(--leaf-soft);border-radius:12px;padding:1rem 1.25rem;margin-top:1.25rem;max-width:80ch}
+/* Tabellen */
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 1.5rem;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:.6rem .75rem;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+thead th{font-weight:600;color:var(--muted);font-size:.85rem}
+.plan{min-width:760px}
+.plan a{text-decoration:none;color:var(--ink)}
+.plan a b{color:var(--leaf)}
+.plan a:hover{text-decoration:underline}
+.plan .prep{color:var(--sun);font-weight:600;font-size:.88rem}
+.split{color:var(--muted)}
+.swaps{min-width:620px}
+h3.week{font-size:1.15rem;margin:1.75rem 0 .75rem;color:var(--leaf)}
+/* Rezepte */
+.recipe{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:1.5rem;margin:0 0 1.5rem}
+.recipe header{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1rem}
+.recipe header>div{flex:1;min-width:0}
+.plate{flex:none;width:112px;height:112px;margin-left:auto}
+@media (max-width:720px){.plate{width:76px;height:76px}}
+.code{flex:none;width:3.2rem;height:3.2rem;border-radius:50%;background:var(--leaf);color:var(--bg);display:grid;place-items:center;font-weight:800;font-size:1.05rem}
+.meta{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0 0;font-size:.85rem}
+.meta span{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:.15rem .6rem;color:var(--muted)}
+.macros{width:auto;min-width:min(100%,420px);margin-bottom:.4rem;border:1px solid var(--line);border-radius:10px;overflow:hidden;border-collapse:separate;border-spacing:0}
+.macros th,.macros td{padding:.4rem .7rem;text-align:right}
+.macros th:first-child{text-align:left}
+.macros tbody th span{display:block;font-weight:400;font-size:.78rem;color:var(--muted)}
+.macros tr.sie{background:var(--sea-soft)}
+.macros tr.er{background:var(--sun-soft)}
+.macros tr.sie th{color:var(--sea)} .macros tr.er th{color:var(--sun)}
+.mnote{font-size:.85rem;color:var(--muted);margin-bottom:1rem}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:1.5rem;margin:1rem 0}
+.ingr{list-style:none;padding:0;margin:0}
+.ingr li{display:grid;grid-template-columns:5.5rem 1fr;gap:.5rem;padding:.3rem 0;border-bottom:1px dashed var(--line);font-size:.97rem}
+.amt{font-weight:600;color:var(--leaf);font-size:.92rem}
+.ingr em{color:var(--muted);font-size:.9em}
+.steps{padding-left:1.3rem;margin:0 0 .8rem}
+.steps li{margin-bottom:.5rem}
+.keep{font-size:.92rem;color:var(--muted)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;font-size:.95rem}
+.facts>div{border-radius:12px;padding:1rem;background:var(--bg)}
+.facts .koll{background:var(--leaf-soft)}
+.chips{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.6rem}
+.chip{background:var(--leaf);color:var(--bg);border-radius:999px;padding:.1rem .6rem;font-size:.8rem;font-weight:600}
+.facts p{margin:0}
+/* Frühstück */
+.bgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
+.bcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:1.25rem}
+.bcard.sie{border-top:6px solid var(--sea)} .bcard.er{border-top:6px solid var(--sunbar)}
+.bcard h3{margin-bottom:.5rem}
+.bcard .macros{margin:.75rem 0}
+.tip{font-size:.93rem;background:var(--leaf-soft);border-radius:10px;padding:.75rem 1rem;margin-top:.75rem}
+/* Einkauf */
+.shop{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem}
+.shopgroup{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1rem}
+.shopgroup ul{padding-left:1.1rem;margin:0;font-size:.95rem}
+/* Kollagen */
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.kcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.25rem}
+.kcard h3{font-size:1.1rem;margin-bottom:.4rem;color:var(--leaf)}
+.kcard p:last-child{margin-bottom:0}
+footer{padding:2rem 0 3rem;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media (max-width:720px){
+  .cols{grid-template-columns:1fr}
+  .recipe{padding:1.1rem}
+  .ingr li{grid-template-columns:4.8rem 1fr}
+  .macros{width:100%}
+}
+@media print{nav{display:none}.recipe{break-inside:avoid}section{border:none}}
+
+/* App */
+button{font:inherit}
+.sync{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:.88rem;color:var(--muted);margin:0 0 1rem}
+.sync.ok::before{content:"● ";color:var(--leaf)} .sync.warn::before{content:"● ";color:var(--sunbar)}
+.xpcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.25rem;margin-bottom:1.25rem;font-family:"Bricolage Grotesque",system-ui,sans-serif}
+.lvl{font-size:.9rem;color:var(--muted)} .lvl b{display:block;font-size:1.6rem;color:var(--ink);line-height:1.15}
+.bar{height:12px;border-radius:99px;background:var(--leaf-soft);overflow:hidden;margin:.6rem 0}
+.bar span{display:block;height:100%;background:var(--leaf);border-radius:99px;transition:width .4s}
+.xpnote{font-size:.85rem;color:var(--muted)} .xpstats{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;margin-top:.5rem;font-size:.95rem}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
+.wcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:1.25rem;border-top:6px solid var(--sea)}
+.wcard.er{border-top-color:var(--sunbar)}
+.wcard h3 span{font-size:.85rem;font-weight:400;color:var(--muted);margin-left:.4rem}
+.wcard h4{margin-top:1rem}
+.wnow{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:2.6rem;font-weight:800;line-height:1;margin-top:.6rem}
+.wnow small{font-size:1rem;color:var(--muted)} .wtrend{color:var(--muted);font-size:.92rem;margin:.2rem 0 .9rem}
+.track{position:relative;height:14px;border-radius:99px;background:var(--bg);border:1px solid var(--line);margin:1.6rem 1.4rem .4rem 0}
+.trackfill{height:100%;border-radius:99px;background:var(--sea)} .er .trackfill{background:var(--sunbar)}
+.runner{position:absolute;top:-1.55rem;transform:translateX(-50%);font-size:1.35rem;transition:left .5s}
+.flag{position:absolute;right:-1.4rem;top:-.45rem;font-size:1.1rem}
+.wmsg{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:.95rem;margin-top:.5rem}
+.wform{display:flex;flex-wrap:wrap;gap:.6rem;align-items:flex-end;margin:1rem 0;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:.85rem}
+.wform label{display:flex;flex-direction:column;gap:.2rem;color:var(--muted)}
+.wform input{font:inherit;font-size:1rem;padding:.45rem .6rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);min-width:0;width:9.5rem}
+.wform button,.btnlink{background:var(--leaf);color:var(--bg);border:0;border-radius:10px;padding:.55rem 1rem;font-weight:600;cursor:pointer;text-decoration:none;font-family:"Bricolage Grotesque",system-ui,sans-serif;display:inline-block}
+.ferr{flex-basis:100%;margin:0;color:var(--sun);font-size:.85rem}
+.wchart{width:100%;height:auto;display:block}
+.wchart .grid{stroke:var(--line);stroke-width:1} .wchart .axis{fill:var(--muted);font-size:12px;font-family:"Bricolage Grotesque",system-ui,sans-serif}
+.wchart .goalband{fill:var(--leaf);opacity:.13} .wchart .startline{stroke:var(--muted);stroke-dasharray:4 4}
+.badges{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.75rem}
+.badge{display:flex;flex-direction:column;align-items:center;font-size:1.4rem;padding:.35rem .5rem;border-radius:12px;border:1px dashed var(--line);opacity:.35;filter:grayscale(1);min-width:4.4rem}
+.badge.got{opacity:1;filter:none;border-style:solid;background:var(--leaf-soft)}
+.badge small{font-size:.68rem;font-family:"Bricolage Grotesque",system-ui,sans-serif;color:var(--ink)}
+.wlist{list-style:none;padding:0;margin:0;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:.92rem}
+.wlist li{display:flex;gap:1rem;align-items:center;padding:.25rem 0;border-bottom:1px dashed var(--line)}
+.wlist li b{margin-left:auto} .wlist .muted{color:var(--muted)}
+.x{background:none;border:0;color:var(--muted);font-size:1.2rem;cursor:pointer;padding:0 .3rem;line-height:1}
+.hint{font-size:.9rem;color:var(--muted);margin-top:1rem}
+.cookbtn{flex:none;margin-left:auto;align-self:flex-start;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:.35rem .85rem;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.cookbtn.on{background:var(--leaf);color:var(--bg);border-color:var(--leaf)}
+.recipe header>div{flex:1;min-width:0}
+.plan a.cooked{text-decoration:line-through;text-decoration-color:var(--leaf);text-decoration-thickness:2px}
+.plan a.cooked::after{content:" ✓";color:var(--leaf);font-weight:700}
+.wkprog{font-size:.85rem;font-weight:600;color:var(--muted);margin-left:.5rem}
+.wkprog.full{color:var(--leaf)}
+.tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.tab{background:var(--surface);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:.4rem .9rem;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:600;cursor:pointer}
+.tab.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.shopbar{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1rem;margin-bottom:1rem;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:.92rem}
+.shopbar .bar{flex:1 1 200px;margin:0}
+.ghost{background:none;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:.45rem .8rem;cursor:pointer;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:.85rem}
+.checks{list-style:none;padding:0;margin:0}
+.checks label{display:flex;gap:.55rem;align-items:flex-start;padding:.25rem 0;cursor:pointer;font-size:.95rem}
+.checks input,.cookcheck input{width:1.1rem;height:1.1rem;accent-color:var(--leaf);margin-top:.2rem;flex:none}
+.checks label.done span{text-decoration:line-through;color:var(--muted)}
+.empty{color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:1rem}
+.flexhead{font-family:"Bricolage Grotesque",system-ui,sans-serif;display:flex;flex-wrap:wrap;gap:1rem;align-items:baseline}
+#flexmsg{color:var(--sun);font-size:.9rem}
+.dishgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.6rem;margin-bottom:1.5rem}
+.dish{position:relative;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:.75rem .85rem;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;gap:.2rem;font-family:"Bricolage Grotesque",system-ui,sans-serif}
+.dish:hover{border-color:var(--leaf)}
+.dish.on{border:2px solid var(--leaf);background:var(--leaf-soft)}
+.dcode{font-weight:800;color:var(--leaf);font-size:.85rem} .dname{font-weight:600;line-height:1.25} .dmeta{font-size:.78rem;color:var(--muted)}
+.dtick{position:absolute;top:.5rem;right:.6rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--leaf);color:var(--bg);display:grid;place-items:center;font-weight:800}
+.plan select{font:inherit;font-size:.92rem;padding:.3rem .4rem;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);max-width:100%}
+.plan .sub{display:block;font-weight:400;color:var(--muted);font-size:.8rem}
+.cookcheck{display:flex;gap:.4rem;align-items:center;white-space:nowrap;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:.9rem}
+.actions{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--sea);outline-offset:2px}
+@media (max-width:720px){.recipe header{flex-wrap:wrap}.cookbtn{margin-left:4.2rem}}
+@media print{.cookbtn,.wform,.tabs,.ghost{display:none}}
+.syncbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:.75rem 1rem;margin-bottom:1.25rem}
+.syncbox summary{cursor:pointer;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:600}
+#glstate{font-weight:400;color:var(--muted);font-size:.85rem;margin-left:.4rem}
+.syncinner{padding-top:.75rem;font-size:.95rem}
+.glform{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.6rem;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:.85rem;margin:.75rem 0}
+.glform label{display:flex;flex-direction:column;gap:.2rem;color:var(--muted)}
+.glform input{font:inherit;font-size:1rem;padding:.45rem .6rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);min-width:0}
+.glbtns{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;grid-column:1/-1}
+.glform button[type=submit]{background:var(--leaf);color:var(--bg);border:0;border-radius:10px;padding:.55rem 1rem;font-weight:600;cursor:pointer}
+.filebtn{position:relative;overflow:hidden;display:inline-block}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+code{font-size:.9em;background:var(--bg);padding:.05rem .3rem;border-radius:4px}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Meal-Prep & Gewichtstracker</h1>
+<nav aria-label="Inhalt"><div class="wrap">
+<a href="#tracker">Tracker</a><a href="#ziele">Ziele</a><a href="#plan">Wochenplan</a><a href="#flexi">Flexi-Woche</a><a href="#fruehstueck">Frühstück und Snacks</a><a href="#woche1">Woche 1</a><a href="#woche2">Woche 2</a><a href="#woche3">Woche 3</a><a href="#woche4">Woche 4</a><a href="#einkauf">Einkauf</a><a href="#kollagen">Kollagen und Nährstoffe</a><a href="#austausch">Gran Canaria</a>
+</div></nav>
 
-    <!-- SECTION: GITLAB SETTINGS -->
-    <div class="card">
-      <details id="sync-details">
-        <summary>▼ Gemeinsam speichern über GitLab <span id="sync-badge" class="status"></span></summary>
-        <p style="font-size: 0.9rem; color: var(--text-sub);">
-          Speichert alle Daten privat in eurem GitLab-Projekt. Die Seite führt Änderungen vor dem Speichern automatisch zusammen, um Datenverlust zu verhindern.
-        </p>
-        <div class="grid">
-          <div>
-            <label>GitLab-Adresse</label>
-            <input type="text" id="cfg-url" value="https://gitlab.com">
-          </div>
-          <div>
-            <label>Projektpfad (username/projekt)</label>
-            <input type="text" id="cfg-path" placeholder="z. B. naeherdran/kochbuch">
-          </div>
-          <div>
-            <label>Branch</label>
-            <input type="text" id="cfg-branch" value="main">
-          </div>
-          <div>
-            <label>Access Token (Scope: api)</label>
-            <input type="password" id="cfg-token" placeholder="glpat-...">
-          </div>
-        </div>
-        <button onclick="connectGitLab()">Verbinden</button>
-        <div id="sync-status" class="status"></div>
-      </details>
-    </div>
+<header class="hero"><div class="wrap">
+<h1>Einmal kochen, zweimal satt.</h1>
+<p class="lead">Unser veganes Meal-Prep-Kochbuch für vier Wochen: 24 einfache Gerichte aus einem kleinen Grundstock an Zutaten, zwei Kochtage plus ein schneller Samstagabend pro Woche, viel Protein, gezielte Kollagen-Unterstützung und keine Schärfe.</p>
+<div class="split-bar" role="img" aria-label="Aufteilung jeder Hauptmahlzeit: Sie 40 Prozent, Er 60 Prozent">
+<div class="s"><b>1 Teil</b><span>Sie, 40 % jeder Batch</span></div>
+<div class="e"><b>1,5 Teile</b><span>Er, 60 % jeder Batch</span></div>
+</div>
+<p class="caption">So teilt ihr jedes Gericht: Seine Box bekommt die Hälfte mehr als ihre. Mit Küchenwaage: Gesamtgewicht der Batch ÷ Anzahl Teile = ihre Portion, ×1,5 = seine.</p>
+</div></header>
 
-    <!-- SECTION: TRACKER & MEAL PREP -->
-    <div class="card">
-      <h2>Euer Tracker</h2>
-      <div class="grid">
-        <div>
-          <label>Gewicht (kg)</label>
-          <input type="number" step="0.1" id="input-weight" placeholder="70.5">
-          <button onclick="addWeight()">Eintragen</button>
-        </div>
-        <div>
-          <label>Notiz / Gericht</label>
-          <input type="text" id="input-note" placeholder="z. B. Wochenkarte gekocht">
-          <button onclick="addNote()">Hinzufügen</button>
-        </div>
-      </div>
-    </div>
+<section id="tracker"><div class="wrap">
+<h2>Euer Tracker</h2>
+<p class="intro">Gewicht eintragen, Gerichte abhaken, Einkaufslisten abhaken. Alles sammelt Punkte für euer gemeinsames Küchen-Level.</p>
+<p id="syncstatus" class="sync">Lade gespeicherte Daten …</p>
+<details class="syncbox" id="syncbox"><summary>Gemeinsam speichern über GitLab <span id="glstate"></span></summary>
+<div class="syncinner">
+<p>Damit ihr beide dieselben Einträge seht, speichert die Seite alles als Datei <code>data.json</code> in eurem privaten GitLab-Projekt. Jede Person richtet das einmal auf jedem eigenen Gerät ein.</p>
+<ol class="steps">
+<li>In GitLab oben links auf euren Avatar, dann „Edit profile“ → „Access tokens“ → „Add new token“. Name z. B. „Kochbuch“, Ablaufdatum wählen, Scope <b>api</b> ankreuzen, erstellen und den Token kopieren. Er wird nur einmal angezeigt.</li>
+<li>Den Projektpfad aus der Adresszeile eures Projekts übernehmen, also den Teil nach gitlab.com/, z. B. <code>deinname/kochbuch</code>.</li>
+<li>Beides hier eintragen und auf „Verbinden“ tippen. Der Token wird nur auf diesem Gerät gespeichert.</li>
+</ol>
+<form id="glform" class="glform" autocomplete="off">
+<label>GitLab-Adresse <input name="host" type="url" value="https://gitlab.com" required></label>
+<label>Projektpfad <input name="project" type="text" placeholder="deinname/kochbuch" required></label>
+<label>Branch <input name="branch" type="text" value="main"></label>
+<label>Token <input name="token" type="password" placeholder="glpat-…"></label>
+<div class="glbtns"><button type="submit">Verbinden</button><button type="button" class="ghost" id="gldisconnect" hidden>Auf diesem Gerät trennen</button></div>
+<p id="glmsg" class="ferr" role="status"></p>
+</form>
+<p class="hint">Sicherheit: Der Token hat Zugriff auf euren GitLab-Account. Gebt ihn nie weiter, nutzt ihn nur auf euren eigenen Geräten und wählt ein Ablaufdatum. Euer Freund braucht im Projekt die Rolle „Maintainer“, damit er speichern darf.</p>
+<h4>Sicherung</h4>
+<div class="glbtns"><button type="button" class="ghost" id="btnexport">Daten exportieren</button><label class="ghost filebtn">Sicherung einlesen<input type="file" id="fileimport" accept="application/json,.json"></label></div>
+</div></details>
+<div id="xp" class="xpcard"></div>
+<div class="wgrid">
+<div class="wcard sie" id="w-sie"><h3>Sie <span>Ziel 60 kg</span></h3><div class="wstats"></div>
+<form class="wform" data-p="sie"><label>Datum <input type="date" required></label><label>Gewicht (kg) <input type="number" step="0.1" min="30" max="200" inputmode="decimal" placeholder="z. B. 61,8" required></label><button type="submit">Eintragen</button><p class="ferr" role="alert"></p></form>
+<div class="wchartbox"></div><div class="badges"></div><h4>Letzte Einträge</h4><ul class="wlist"></ul></div>
+<div class="wcard er" id="w-er"><h3>Er <span>Ziel über 80 kg</span></h3><div class="wstats"></div>
+<form class="wform" data-p="er"><label>Datum <input type="date" required></label><label>Gewicht (kg) <input type="number" step="0.1" min="30" max="200" inputmode="decimal" placeholder="z. B. 77,4" required></label><button type="submit">Eintragen</button><p class="ferr" role="alert"></p></form>
+<div class="wchartbox"></div><div class="badges"></div><h4>Letzte Einträge</h4><ul class="wlist"></ul></div>
+</div>
+<p class="hint">Tipp: 1× pro Woche am selben Wochentag morgens nüchtern wiegen. Ein zweiter Eintrag am selben Tag überschreibt den ersten.</p>
+</div></section>
 
-    <!-- SECTION: DATA DISPLAY -->
-    <div class="card">
-      <h3>Gespeicherte Daten</h3>
-      <h4>Gewichtsverlauf</h4>
-      <ul id="list-weights"></ul>
-      <h4>Notizen & Aktivitäten</h4>
-      <ul id="list-notes"></ul>
-    </div>
-  </div>
+<section id="ziele"><div class="wrap">
+<h2>Eure Tagesziele</h2>
+<p class="intro">Berechnet mit der Mifflin-St-Jeor-Formel aus euren Angaben und einem Aktivitätsfaktor von ca. 1,5 (Bürojob plus 3–4 Trainingseinheiten). Das sind Startwerte: nach 2–3 Wochen anhand der Waage nachjustieren.</p>
+<div class="note start"><b>Startwerte am 6. November 2026:</b> Sie 62 kg (Ziel 60 kg), Er 77 kg (Ziel über 80 kg). Tragt hier gern alle 1–2 Wochen euren neuen Stand ein.</div>
+<div class="goals">
+<div class="goal"><h3>Sie: Definition</h3>
+<div class="big">≈ 1.700–1.850 <small>kcal/Tag</small></div>
+<div class="big">≈ 110–115 g <small>Protein (ca. 1,8 g/kg)</small></div>
+<ul><li>Gesamtumsatz ca. 1.950–2.000 kcal, Ziel ca. 200–300 kcal darunter, im Wochenschnitt ca. 1.725 kcal (langsam, muskelschonend).</li>
+<li>Ruhetag: Rührtofu + 2 Hauptmahlzeiten + Tee und Eiskaffee ≈ 1.615 kcal, 102 g Protein.</li>
+<li>Trainingstag: + Protein-Shake ≈ 1.805 kcal, 128 g Protein.</li></ul></div>
+<div class="goal er"><h3>Er: Muskelaufbau</h3>
+<div class="big">≈ 2.900 <small>kcal/Tag</small></div>
+<div class="big">≈ 150–160 g <small>Protein (ca. 2,0 g/kg)</small></div>
+<ul><li>Gesamtumsatz ca. 2.600–2.700 kcal, Ziel ca. 200–300 kcal darüber.</li>
+<li>Ruhetag: Müsli + 2 × 1,5 Teile + Kürbiskerne + Tee und Eiskaffee ≈ 2.685 kcal, 155 g Protein.</li>
+<li>Trainingstag: + Aufbau-Shake ≈ 3.085 kcal, 164 g Protein.</li></ul></div>
+</div>
+<div class="note"><b>Nachjustieren:</b> Wiegt euch 1× pro Woche morgens nüchtern. Bei einem Defizit von ca. 250 kcal pro Tag sind für sie ca. 0,2–0,3 kg pro Woche realistisch, von 62 auf 60 kg also in etwa 7–10 Wochen. Die ersten 1–2 Wochen schwankt die Waage durch Wasser stark, deshalb erst den Trend über 3 Wochen bewerten. Er sollte ca. 0,25 kg pro Woche zunehmen, von 77 auf über 80 kg also in etwa 3 Monaten; schneller zuzunehmen bringt vor allem Fett statt Muskeln. Passiert bei ihm nichts, gibt es eine Extra-Kelle Reis/Pasta oder 1 EL mehr Erdnussmus im Müsli. Stagniert sie 3 Wochen lang, fällt das Vollkornbrot zum Rührtofu weg (−100 kcal); nimmt sie schneller als 0,5 kg pro Woche ab, kommt etwas dazu. Die Werte sind gerundete Schätzungen; Marken weichen ab.</div>
+</div></section>
 
-  <script>
-    // App State
-    let appData = {
-      weights: [],
-      notes: [],
-      updatedAt: 0
-    };
+<section id="plan"><div class="wrap">
+<h2>Vier-Wochen-Plan</h2>
+<p class="intro">Jede Woche beginnt mit dem Kochsonntag. Sonntag entstehen das Mittagessen für 4 Tage und zwei Abendessen, Mittwochabend die Gerichte für Donnerstag bis Samstag, Samstagabend wird schnell frisch gekocht. Unter der Woche nur Frühstück machen und aufwärmen. An Trainingstagen kommt ein Shake dazu. M = Mittag, A = Abend.</p>
+<h3 class="week">Woche 1 <span class="wkprog" data-wkprog="1"></span></h3><div class="tablewrap"><table class="plan"><thead><tr><th>Tag</th><th>Frühstück (Sie / Er)</th><th>Mittag</th><th>Abend</th><th>Kochen</th></tr></thead><tbody><tr><th>So</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m1" data-rid="m1"><b>M1</b> Ingwer-Tofu-Bowl</a></td><td><a href="#a1" data-rid="a1"><b>A1</b> Linsen-Bolognese</a></td><td class="prep">Kochtag: M1, A1, A2 (ca. 2 Std.)</td></tr><tr><th>Mo</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m1" data-rid="m1"><b>M1</b> Ingwer-Tofu-Bowl</a></td><td><a href="#a1" data-rid="a1"><b>A1</b> Linsen-Bolognese</a></td><td class="prep"></td></tr><tr><th>Di</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m1" data-rid="m1"><b>M1</b> Ingwer-Tofu-Bowl</a></td><td><a href="#a2" data-rid="a2"><b>A2</b> Ofen-Tofu</a></td><td class="prep"></td></tr><tr><th>Mi</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m1" data-rid="m1"><b>M1</b> Ingwer-Tofu-Bowl</a></td><td><a href="#a2" data-rid="a2"><b>A2</b> Ofen-Tofu</a></td><td class="prep">Kochabend: M2, A3 (ca. 1¼ Std.)</td></tr><tr><th>Do</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m2" data-rid="m2"><b>M2</b> Weiße-Bohnen-Pastasalat</a></td><td><a href="#a3" data-rid="a3"><b>A3</b> Mildes Tofu-Curry</a></td><td class="prep"></td></tr><tr><th>Fr</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m2" data-rid="m2"><b>M2</b> Weiße-Bohnen-Pastasalat</a></td><td><a href="#a3" data-rid="a3"><b>A3</b> Mildes Tofu-Curry</a></td><td class="prep"></td></tr><tr><th>Sa</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m2" data-rid="m2"><b>M2</b> Weiße-Bohnen-Pastasalat</a></td><td><a href="#a4" data-rid="a4"><b>A4</b> Kanarische Ofenkartoffeln</a></td><td class="prep">Frisch: A4 (ca. 30–45 Min.)</td></tr></tbody></table></div><h3 class="week">Woche 2 <span class="wkprog" data-wkprog="2"></span></h3><div class="tablewrap"><table class="plan"><thead><tr><th>Tag</th><th>Frühstück (Sie / Er)</th><th>Mittag</th><th>Abend</th><th>Kochen</th></tr></thead><tbody><tr><th>So</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m3" data-rid="m3"><b>M3</b> Paprika-Kartoffel-Gulasch</a></td><td><a href="#a5" data-rid="a5"><b>A5</b> Cremige Pilz-Tomaten-Pasta</a></td><td class="prep">Kochtag: M3, A5, A6 (ca. 2 Std.)</td></tr><tr><th>Mo</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m3" data-rid="m3"><b>M3</b> Paprika-Kartoffel-Gulasch</a></td><td><a href="#a5" data-rid="a5"><b>A5</b> Cremige Pilz-Tomaten-Pasta</a></td><td class="prep"></td></tr><tr><th>Di</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m3" data-rid="m3"><b>M3</b> Paprika-Kartoffel-Gulasch</a></td><td><a href="#a6" data-rid="a6"><b>A6</b> Milde Burrito-Bowl</a></td><td class="prep"></td></tr><tr><th>Mi</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m3" data-rid="m3"><b>M3</b> Paprika-Kartoffel-Gulasch</a></td><td><a href="#a6" data-rid="a6"><b>A6</b> Milde Burrito-Bowl</a></td><td class="prep">Kochabend: M4, A7 (ca. 1¼ Std.)</td></tr><tr><th>Do</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m4" data-rid="m4"><b>M4</b> Erdnuss-Nudelsalat</a></td><td><a href="#a7" data-rid="a7"><b>A7</b> Tempeh-Gyros</a></td><td class="prep"></td></tr><tr><th>Fr</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m4" data-rid="m4"><b>M4</b> Erdnuss-Nudelsalat</a></td><td><a href="#a7" data-rid="a7"><b>A7</b> Tempeh-Gyros</a></td><td class="prep"></td></tr><tr><th>Sa</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m4" data-rid="m4"><b>M4</b> Erdnuss-Nudelsalat</a></td><td><a href="#a8" data-rid="a8"><b>A8</b> Tofu-Patties</a></td><td class="prep">Frisch: A8 (ca. 30–45 Min.)</td></tr></tbody></table></div><h3 class="week">Woche 3 <span class="wkprog" data-wkprog="3"></span></h3><div class="tablewrap"><table class="plan"><thead><tr><th>Tag</th><th>Frühstück (Sie / Er)</th><th>Mittag</th><th>Abend</th><th>Kochen</th></tr></thead><tbody><tr><th>So</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m5" data-rid="m5"><b>M5</b> Rotes Linsen-Dal</a></td><td><a href="#a9" data-rid="a9"><b>A9</b> Würstchen-Pasta in Tomaten-Paprika-Sauce</a></td><td class="prep">Kochtag: M5, A9, A10 (ca. 2 Std.)</td></tr><tr><th>Mo</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m5" data-rid="m5"><b>M5</b> Rotes Linsen-Dal</a></td><td><a href="#a9" data-rid="a9"><b>A9</b> Würstchen-Pasta in Tomaten-Paprika-Sauce</a></td><td class="prep"></td></tr><tr><th>Di</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m5" data-rid="m5"><b>M5</b> Rotes Linsen-Dal</a></td><td><a href="#a10" data-rid="a10"><b>A10</b> Gefüllte Paprika</a></td><td class="prep"></td></tr><tr><th>Mi</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m5" data-rid="m5"><b>M5</b> Rotes Linsen-Dal</a></td><td><a href="#a10" data-rid="a10"><b>A10</b> Gefüllte Paprika</a></td><td class="prep">Kochabend: M6, A11 (ca. 1¼ Std.)</td></tr><tr><th>Do</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m6" data-rid="m6"><b>M6</b> Bratkartoffeln</a></td><td><a href="#a11" data-rid="a11"><b>A11</b> Brokkoli-Cashew-Tofu</a></td><td class="prep"></td></tr><tr><th>Fr</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m6" data-rid="m6"><b>M6</b> Bratkartoffeln</a></td><td><a href="#a11" data-rid="a11"><b>A11</b> Brokkoli-Cashew-Tofu</a></td><td class="prep"></td></tr><tr><th>Sa</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m6" data-rid="m6"><b>M6</b> Bratkartoffeln</a></td><td><a href="#a12" data-rid="a12"><b>A12</b> Wraps oder Bowl</a></td><td class="prep">Frisch: A12 (ca. 30–45 Min.)</td></tr></tbody></table></div><h3 class="week">Woche 4 <span class="wkprog" data-wkprog="4"></span></h3><div class="tablewrap"><table class="plan"><thead><tr><th>Tag</th><th>Frühstück (Sie / Er)</th><th>Mittag</th><th>Abend</th><th>Kochen</th></tr></thead><tbody><tr><th>So</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m7" data-rid="m7"><b>M7</b> Weiße-Bohnen-Eintopf</a></td><td><a href="#a13" data-rid="a13"><b>A13</b> Ofen-Pasta</a></td><td class="prep">Kochtag: M7, A13, A14 (ca. 2 Std.)</td></tr><tr><th>Mo</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m7" data-rid="m7"><b>M7</b> Weiße-Bohnen-Eintopf</a></td><td><a href="#a13" data-rid="a13"><b>A13</b> Ofen-Pasta</a></td><td class="prep"></td></tr><tr><th>Di</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m7" data-rid="m7"><b>M7</b> Weiße-Bohnen-Eintopf</a></td><td><a href="#a14" data-rid="a14"><b>A14</b> Süßkartoffel-Tempeh-Blech</a></td><td class="prep"></td></tr><tr><th>Mi</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m7" data-rid="m7"><b>M7</b> Weiße-Bohnen-Eintopf</a></td><td><a href="#a14" data-rid="a14"><b>A14</b> Süßkartoffel-Tempeh-Blech</a></td><td class="prep">Kochabend: M8, A15 (ca. 1¼ Std.)</td></tr><tr><th>Do</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m8" data-rid="m8"><b>M8</b> Kalte Sushi-Bowl</a></td><td><a href="#a15" data-rid="a15"><b>A15</b> Gebratener Gemüsereis</a></td><td class="prep"></td></tr><tr><th>Fr</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m8" data-rid="m8"><b>M8</b> Kalte Sushi-Bowl</a></td><td><a href="#a15" data-rid="a15"><b>A15</b> Gebratener Gemüsereis</a></td><td class="prep"></td></tr><tr><th>Sa</th><td>Rührtofu <span class="split">/</span> Müsli</td><td><a href="#m8" data-rid="m8"><b>M8</b> Kalte Sushi-Bowl</a></td><td><a href="#a16" data-rid="a16"><b>A16</b> Würstchen-Pfanne</a></td><td class="prep">Frisch: A16 (ca. 30–45 Min.)</td></tr></tbody></table></div>
+<div class="note"><b>Wenige Zutaten, viel Abwechslung:</b> Alle 24 Gerichte kommen mit einem Grundstock von rund 35 Zutaten aus, mit Tofu, roter Paprika, Brokkoli, Karotten, Zwiebeln, Tomaten, Basmati, Sojasoße, Ingwer, Erdnussmus, Hefeflocken, Sojasahne und passierten Tomaten als Hauptdarstellern. <b>Hülsenfrüchte</b> kommen in 6 von 24 Gerichten vor, jeweils in kleinen Mengen (max. 70 g gegart bzw. 35 g trocken pro Teil) und immer kombiniert mit Tofu, Tempeh, Würstchen oder Soja.</div>
+</div></section>
 
-    // Load credentials from localStorage
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('cfg-url').value = localStorage.getItem('gl_url') || 'https://gitlab.com';
-      document.getElementById('cfg-path').value = localStorage.getItem('gl_path') || '';
-      document.getElementById('cfg-branch').value = localStorage.getItem('gl_branch') || 'main';
-      document.getElementById('cfg-token').value = localStorage.getItem('gl_token') || '';
+<section id="flexi"><div class="wrap">
+<h2>Flexi-Woche</h2>
+<p class="intro">Stellt euch eine Woche aus euren Lieblingsgerichten zusammen: Tippt bis zu 6 Gerichte an, auf die ihr Lust habt. Gerichte, die gut in die Mittagsbox passen, landen automatisch auf den Mittagsplätzen, frische Samstagsgerichte auf dem Samstag. Jeden Platz könnt ihr danach noch per Auswahlfeld ändern. Die passende Einkaufsliste findet ihr unter Einkauf im Reiter „Flexi-Woche“.</p>
+<p class="flexhead"><b id="flexcount">0 von 6 ausgewählt</b> <span id="flexmsg" role="status"></span></p>
+<div id="flexgrid" class="dishgrid"></div>
+<div id="flexplan"></div>
+</div></section>
 
-      if (localStorage.getItem('gl_token') && localStorage.getItem('gl_path')) {
-        syncFromGitLab();
-      }
-    });
+<section id="fruehstueck"><div class="wrap">
+<h2>Frühstück, Shakes und Snacks</h2>
+<p class="intro">Eure Frühstücke bleiben, nur leicht optimiert. Ihr Rührtofu passt sehr gut zu ihren Zielen (viel Protein pro Kalorie), sein Müsli liefert die Energie, die er für den Aufbau braucht.</p>
+<div class="bgrid">
+<div class="bcard sie"><h3>Ihr Rührtofu, Kollagen-Upgrade</h3>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead><tbody><tr class="sie"><th>Sie</th><td>450</td><td><b>34 g</b></td><td>36 g</td><td>18 g</td></tr></tbody></table>
+<ul class="ingr">
+<li><span class="amt">125 g</span><span class="it">fester Tofu <em>(½ Packung, die zweite Hälfte gleich für morgen mit vorbereiten)</em></span></li>
+<li><span class="amt">¼–½</span><span class="it">Zwiebel</span></li>
+<li><span class="amt">1 Handvoll</span><span class="it">Spinat (≈ 60 g)</span></li>
+<li><span class="amt">1</span><span class="it">Tomate</span></li>
+<li><span class="amt">neu: ½</span><span class="it">rote Paprika <em>(+ ca. 100 mg Vitamin C, +15 kcal)</em></span></li>
+<li><span class="amt">2 EL</span><span class="it">Hefeflocken (≈ 15 g)</span></li>
+<li><span class="amt">1 TL</span><span class="it">Sojasoße, Kurkuma + eine Prise schwarzer Pfeffer</span></li>
+<li><span class="amt">1 TL</span><span class="it">Öl zum Braten</span></li>
+<li><span class="amt">2 EL</span><span class="it">Alpro Joghurt Greek Style, ungesüßt <em>(für mehr Protein: Alpro High Protein/Skyr-Style, + ca. 3 g)</em></span></li>
+<li><span class="amt">1 Scheibe</span><span class="it">Vollkornbrot <em>(optional, ≈ 100 kcal, 4 g Protein, in den Werten enthalten)</em></span></li>
+</ul>
+<p class="tip">Kollagen-Beitrag: Paprika und Tomate liefern Vitamin C, Tofu Lysin und Prolin. Der Pfeffer verbessert die Aufnahme des Kurkumins.</p>
+</div>
+<div class="bcard er"><h3>Sein Power-Müsli</h3>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead><tbody><tr class="er"><th>Er</th><td>795</td><td><b>45 g</b></td><td>73 g</td><td>32 g</td></tr></tbody></table>
+<ul class="ingr">
+<li><span class="amt">90 g</span><span class="it">Haferflocken</span></li>
+<li><span class="amt">25 g</span><span class="it">Erdnussmus</span></li>
+<li><span class="amt">15 g</span><span class="it">Leinsamen geschrotet oder Kürbiskerne</span></li>
+<li><span class="amt">20 g</span><span class="it">veganes Proteinpulver <em>(neutral oder Vanille ohne Süßstoff)</em></span></li>
+<li><span class="amt">250 ml</span><span class="it">Sojadrink, ungesüßt</span></li>
+<li><span class="amt">150 g</span><span class="it">TK-Beeren oder Vitamin-C-reiches Obst (Papaya, Kiwi, Orange)</span></li>
+</ul>
+<p class="tip">Optional: 30 g der Haferflocken durch Protein-Müsli ersetzen (+ ca. 5 g Protein). Das Proteinpulver ist bewusst auf 20 g gesetzt, sonst käme er mit den großen Hauptmahlzeiten deutlich über 2 g/kg. Hafer liefert Kupfer, Zink und Silizium, Beeren Vitamin C.</p>
+</div>
+<div class="bcard sie"><h3>Ihr Protein-Shake (Trainingstage)</h3>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead><tbody><tr class="sie"><th>Sie</th><td>190</td><td><b>26 g</b></td><td>6 g</td><td>6 g</td></tr></tbody></table>
+<ul class="ingr">
+<li><span class="amt">25 g</span><span class="it">veganes Proteinpulver <em>(im Shaker oder Schraubglas schütteln)</em></span></li>
+<li><span class="amt">200 ml</span><span class="it">Sojadrink, ungesüßt + 100 ml Wasser</span></li>
+<li><span class="amt">50 g</span><span class="it">TK-Beeren <em>(Vitamin C, aufgetaut dazu essen)</em></span></li>
+</ul>
+<p class="tip">Am besten nach dem Training. Ohne Shake liegt ihr Protein an Ruhetagen bei ca. 1,6 g/kg, das ist völlig in Ordnung.</p>
+</div>
+<div class="bcard er"><h3>Sein Aufbau-Shake (Trainingstage)</h3>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead><tbody><tr class="er"><th>Er</th><td>400</td><td><b>9 g</b></td><td>57 g</td><td>13 g</td></tr></tbody></table>
+<ul class="ingr">
+<li><span class="amt">300 ml</span><span class="it">Haferdrink, ohne Zuckerzusatz</span></li>
+<li><span class="amt">1</span><span class="it">Banane <em>(dazu essen, oder mit der Gabel zerdrücken und einrühren)</em></span></li>
+<li><span class="amt">1 EL</span><span class="it">Erdnussmus (15 g)</span></li>
+<li><span class="amt">20 g</span><span class="it">zarte Haferflocken <em>(mit Haferdrink und Erdnussmus im Shaker oder Schraubglas kräftig schütteln, 5 Min. quellen lassen)</em></span></li>
+</ul>
+<p class="tip">Kalorien statt Protein: Sein Protein ist über die Mahlzeiten schon gedeckt, ihm fehlen für den Aufbau eher Energie. Wer doch mehr Protein will: Sojadrink statt Haferdrink (+ 8 g Protein).</p>
+</div>
+<div class="bcard"><h3>Tee und Eiskaffee (für beide)</h3>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead><tbody><tr class="sie"><th>Sie</th><td>45</td><td><b>4 g</b></td><td>1 g</td><td>2 g</td></tr><tr class="er"><th>Er</th><td>45</td><td><b>4 g</b></td><td>1 g</td><td>2 g</td></tr></tbody></table>
+<ul class="ingr">
+<li><span class="amt">morgens</span><span class="it">Schwarztee mit einem Schuss Sojadrink <em>(≈ 30 ml, ca. 10 kcal)</em></span></li>
+<li><span class="amt">mittags</span><span class="it">Eiskaffee, entkoffeiniert, mit Sojadrink <em>(≈ 100 ml, ca. 35 kcal, 3 g Protein)</em></span></li>
+</ul>
+<p class="tip">In den Tagessummen ist beides täglich eingerechnet. Sojadrink ungesüßt und mit Calcium wählen („sin azúcar“, „con calcio“), dann liefert er nebenbei Calcium. Den Schwarztee am besten ca. eine Stunde nach dem Rührtofu trinken: Gerbstoffe hemmen die Eisenaufnahme aus Tofu und Spinat.</p>
+</div>
+</div>
+</div></section>
 
-    function getSyncConfig() {
-      return {
-        url: document.getElementById('cfg-url').value.trim().replace(/\/$/, ''),
-        path: encodeURIComponent(document.getElementById('cfg-path').value.trim()),
-        branch: document.getElementById('cfg-branch').value.trim() || 'main',
-        token: document.getElementById('cfg-token').value.trim()
-      };
+<section id="woche1"><div class="wrap">
+<h2>Rezepte Woche 1</h2>
+<p class="intro">Alle Mengen sind für die ganze Batch, die Nährwerte gelten pro Portion: „Sie“ = 1 Teil, „Er“ = 1,5 Teile. „Öl“ meint euer raffiniertes Pflanzenöl.</p>
+<article class="recipe" id="m1">
+<header><span class="code">M1</span><div><h3>Ingwer-Tofu-Bowl mit Brokkoli, Karotten und Basmati</h3>
+<p class="meta"><span>Mittag, So–Mi</span><span>10 Teile (4 Tage)</span><span>ca. 50 Min.</span></p></div><button type="button" class="cookbtn" data-cook="m1" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>580</td><td><b>31 g</b></td><td>63 g</td><td>21 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>870</td><td><b>46 g</b></td><td>94 g</td><td>32 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">1,3 kg <em>(≈ 5 Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">500 g</span><span class="it">Basmatireis, trocken</span></li><li><span class="amt">1,5 kg <em>(≈ 4 Köpfe)</em></span><span class="it">Brokkoli</span></li><li><span class="amt">600 g <em>(≈ 8 Stück)</em></span><span class="it">Karotten</span></li><li><span class="amt">400 g</span><span class="it">TK-Erbsen</span></li><li><span class="amt">150 ml</span><span class="it">Sojasoße</span></li><li><span class="amt">6 EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">4 EL</span><span class="it">Speisestärke</span></li><li><span class="amt">40 g</span><span class="it">Ingwer, frisch</span></li><li><span class="amt">8 Zehen</span><span class="it">Knoblauch</span></li><li><span class="amt">80 g</span><span class="it">Cashews</span></li><li><span class="amt">Würzen</span><span class="it">1 EL Apfelessig, optional Sesam statt Cashews</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Reis kochen, flach auf einem Blech auskühlen lassen.</li><li>Tofu würfeln, mit 3 EL Sojasoße, 1 EL Stärke und 1 EL Öl mischen, 25–30 Min. bei 200 °C backen.</li><li>Brokkoli, Karotten und Erbsen 4–5 Min. dämpfen, knackig lassen. So geht’s ohne Dämpfeinsatz: Gemüse in eine große Pfanne oder einen Topf geben, 4–5 EL Wasser und eine Prise Salz dazu, abdecken (Deckel, Alufolie oder ein großer Teller), bei mittlerer bis hoher Hitze 4–5 Min. garen. Das Wasser sollte am Ende fast verdampft sein. Gabelprobe: Der Brokkolistiel lässt sich anstechen, ist aber noch fest und leuchtend grün.</li><li>Sauce: restliche Sojasoße, Öl, geriebenen Ingwer, Knoblauch, Essig und 150 ml Wasser aufkochen, mit der restlichen angerührten Stärke binden. Cashews hacken und erst beim Essen darüberstreuen.</li></ol><p class="keep"><b>Haltbarkeit:</b> 4 Tage; die Mittwochs-Boxen am besten einfrieren.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span><span class="chip">Kupfer</span></div><p>Brokkoli liefert pro Teil rund 80–100 mg Vitamin C, Tofu und Erbsen Lysin, Cashews Kupfer.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Brokkoli enthält Sulforaphan: Es aktiviert körpereigene Schutz- und Entgiftungsenzyme, wirkt antioxidativ und entzündungshemmend und schützt so Zellen, auch die kollagenbildenden der Haut, vor oxidativem Stress. Tipp: Brokkoli nach dem Schneiden ca. 30 Min. liegen lassen und nur kurz dämpfen, dann entsteht mehr davon. Ingwer wirkt verdauungsfördernd.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Cashews → Sesam oder Kürbiskerne.</p></div></div>
+</article><article class="recipe" id="a1">
+<header><span class="code">A1</span><div><h3>Linsen-Bolognese mit Vollkornpasta</h3>
+<p class="meta"><span>Abend, So–Mo</span><span>5 Teile (2 Tage)</span><span>ca. 40 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a1" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>585</td><td><b>35 g</b></td><td>84 g</td><td>8 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>880</td><td><b>52 g</b></td><td>126 g</td><td>12 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">375 g</span><span class="it">Vollkornpasta, trocken</span></li><li><span class="amt">125 g</span><span class="it">Sojagranulat, fein</span></li><li><span class="amt">100 g</span><span class="it">rote Linsen, trocken</span></li><li><span class="amt">750 g</span><span class="it">passierte Tomaten</span></li><li><span class="amt">75 g</span><span class="it">Tomatenmark</span></li><li><span class="amt">250 g <em>(≈ 2 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">250 g <em>(≈ 3 Stück)</em></span><span class="it">Karotten</span></li><li><span class="amt">250 g</span><span class="it">Champignons</span></li><li><span class="amt">2½ EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">25 g</span><span class="it">Hefeflocken</span></li><li><span class="amt">2½ EL</span><span class="it">Sojasoße</span></li><li><span class="amt">Würzen</span><span class="it">Oregano, Thymian, 1 TL Pimentón dulce, Gemüsebrühe, Pfeffer</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Sojagranulat 10 Min. in heißer Brühe mit der Sojasoße einweichen.</li><li>Zwiebeln, Karotten und Pilze fein würfeln, 8 Min. im Öl anbraten, Granulat dazu und anrösten, Tomatenmark kurz mitrösten.</li><li>Passata, Linsen, 300 ml Brühe und Gewürze dazu, 20 Min. köcheln. Hefeflocken einrühren.</li><li>Pasta al dente kochen und getrennt lagern.</li></ol><p class="keep"><b>Haltbarkeit:</b> Sauce 4 Tage, gut einfrierbar.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Lysin</span><span class="chip">Kupfer</span><span class="chip">Lycopin</span></div><p>Soja und Linsen liefern Lysin, Pilze und Linsen Kupfer, gekochte Tomaten Lycopin als Hautschutz.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Vitamin-C-Partner: ein paar rohe Paprikastreifen dazu.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Sojagranulat → 400 g zerbröselter Tofu.</p></div></div>
+</article><article class="recipe" id="a2">
+<header><span class="code">A2</span><div><h3>Ofen-Tofu mit Paprika-Kartoffeln und Knoblauch-Joghurt</h3>
+<p class="meta"><span>Abend, Di–Mi (vorgekocht am So)</span><span>5 Teile (2 Tage)</span><span>ca. 45 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a2" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>560</td><td><b>30 g</b></td><td>57 g</td><td>22 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>840</td><td><b>45 g</b></td><td>86 g</td><td>33 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">750 g <em>(≈ 3 Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">1,25 kg</span><span class="it">Kartoffeln</span></li><li><span class="amt">750 g <em>(≈ 5 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">200 g <em>(≈ 2 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">4 EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">375 g</span><span class="it">Sojajoghurt natur, ungesüßt</span></li><li><span class="amt">1 Zitrone</span><span class="it">Zitronensaft</span></li><li><span class="amt">4 Zehen</span><span class="it">Knoblauch</span></li><li><span class="amt">Würzen</span><span class="it">2 TL Pimentón ahumado dulce, Oregano, Salz</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Kartoffeln in Würfel schneiden, mit der Hälfte des Öls, Salz und Pimentón 15 Min. bei 200 °C backen.</li><li>Tofu würfeln, mit restlichem Öl, Pimentón und etwas Sojasoße mischen. Mit Paprika- und Zwiebelstücken aufs Blech, weitere 25 Min. backen.</li><li>Joghurt mit Zitrone, Knoblauch und Salz verrühren, getrennt lagern.</li></ol><p class="keep"><b>Haltbarkeit:</b> 4 Tage.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span></div><p>Rote Paprika ist die beste Vitamin-C-Quelle im Buch (ca. 140 mg pro 100 g), Tofu liefert Lysin und Prolin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Abgekühlte und wieder erwärmte Kartoffeln liefern resistente Stärke.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Tofu → Tempeh.</p></div></div>
+</article><article class="recipe" id="m2">
+<header><span class="code">M2</span><div><h3>Weiße-Bohnen-Pastasalat mit Tofu, Paprika und Tomate</h3>
+<p class="meta"><span>Mittag, Do–Sa (vorgekocht am Mi)</span><span>7,5 Teile (3 Tage)</span><span>ca. 30 Min. + Marinieren</span></p></div><button type="button" class="cookbtn" data-cook="m2" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>555</td><td><b>31 g</b></td><td>61 g</td><td>18 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>830</td><td><b>46 g</b></td><td>92 g</td><td>27 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">450 g</span><span class="it">Vollkornpasta, trocken</span></li><li><span class="amt">450 g <em>(≈ 2 Gläser/Dosen)</em></span><span class="it">weiße Bohnen, abgetropft</span></li><li><span class="amt">825 g <em>(≈ 3½ Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">750 g <em>(≈ 5 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">750 g <em>(≈ 6 Stück)</em></span><span class="it">Tomaten</span></li><li><span class="amt">600 g <em>(≈ 2 Stück)</em></span><span class="it">Salatgurke</span></li><li><span class="amt">5 EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">2 Zitronen</span><span class="it">Zitronensaft</span></li><li><span class="amt">38 g</span><span class="it">Hefeflocken</span></li><li><span class="amt">Würzen</span><span class="it">Oregano, 2 EL Apfelessig, Salz, Pfeffer</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Pasta kochen, kalt abspülen.</li><li>Tofu fein würfeln, mit Zitrone, Essig, Hefeflocken, Oregano, Salz und 1 EL Öl mindestens 1 Std. marinieren (schmeckt feta-ähnlich).</li><li>Gemüse würfeln. Alles mit den Bohnen mischen, Dressing aus Öl, Zitrone, Salz, Pfeffer getrennt lagern.</li></ol><p class="keep"><b>Haltbarkeit:</b> 3 Tage, Dressing separat.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span></div><p>Paprika, Tomate und Zitrone liefern Vitamin C, weiße Bohnen und Tofu ergänzen sich beim Lysin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Vitamin C im Salat verbessert die Eisenaufnahme aus Bohnen und Tofu.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Weiße Bohnen → Kichererbsen.</p></div></div>
+</article><article class="recipe" id="a3">
+<header><span class="code">A3</span><div><h3>Mildes Tofu-Curry mit Süßkartoffel, Spinat und Sojasahne</h3>
+<p class="meta"><span>Abend, Do–Fr (vorgekocht am Mi)</span><span>5 Teile (2 Tage)</span><span>ca. 35 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a3" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>580</td><td><b>30 g</b></td><td>68 g</td><td>19 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>870</td><td><b>45 g</b></td><td>102 g</td><td>28 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">700 g <em>(≈ 3 Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">200 ml <em>(≈ 1 Packung)</em></span><span class="it">Sojasahne zum Kochen</span></li><li><span class="amt">500 g</span><span class="it">Süßkartoffeln</span></li><li><span class="amt">400 g</span><span class="it">Spinat, TK oder frisch</span></li><li><span class="amt">200 g</span><span class="it">TK-Erbsen</span></li><li><span class="amt">200 g <em>(≈ 2 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">225 g</span><span class="it">Basmatireis, trocken</span></li><li><span class="amt">250 g</span><span class="it">passierte Tomaten</span></li><li><span class="amt">20 g</span><span class="it">Ingwer, frisch</span></li><li><span class="amt">4 Zehen</span><span class="it">Knoblauch</span></li><li><span class="amt">Würzen</span><span class="it">2 TL Kurkuma, 1½ TL Kreuzkümmel, 1 TL Pimentón dulce, ½ TL Zimt, Pfeffer, 1 EL Öl, Saft ½ Zitrone</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Tofu würfeln und goldbraun anbraten.</li><li>Zwiebel, Ingwer, Knoblauch anschwitzen, Gewürze 1 Min. mitrösten.</li><li>Süßkartoffelwürfel, Passata und 200 ml Wasser dazu, 15 Min. köcheln. Sojasahne, Erbsen, Spinat und Tofu unterheben, mit Zitrone abschmecken. Reis separat.</li></ol><p class="keep"><b>Haltbarkeit:</b> 4 Tage, gut einfrierbar.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Beta-Carotin</span><span class="chip">Vitamin C</span><span class="chip">Lysin</span></div><p>Süßkartoffel liefert Beta-Carotin für die Hauterneuerung, Spinat und Erbsen Vitamin C, Tofu Lysin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Eigene Gewürzmischung, weil fertiges Currypulver oft Chili enthält. Pfeffer verbessert die Kurkumin-Aufnahme.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Süßkartoffel → Kartoffeln oder Karotten.</p></div></div>
+</article><article class="recipe" id="a4">
+<header><span class="code">A4</span><div><h3>Kanarische Ofenkartoffeln mit mildem Mojo rojo und Knusper-Tofu</h3>
+<p class="meta"><span>Abend, Sa (frisch)</span><span>2,5 Teile (1 Tag)</span><span>ca. 45 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a4" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>600</td><td><b>29 g</b></td><td>65 g</td><td>23 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>900</td><td><b>44 g</b></td><td>98 g</td><td>34 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">650 g</span><span class="it">Kartoffeln</span></li><li><span class="amt">375 g <em>(≈ 1½ Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">2½ EL</span><span class="it">Speisestärke</span></li><li><span class="amt">2½ EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">250 g <em>(≈ 2 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">2 Zehen</span><span class="it">Knoblauch</span></li><li><span class="amt">200 g <em>(≈ 2 Stück)</em></span><span class="it">Tomaten</span></li><li><span class="amt">200 g <em>(≈ 1 Stück)</em></span><span class="it">Salatgurke</span></li><li><span class="amt">100 g</span><span class="it">TK-Erbsen</span></li><li><span class="amt">Würzen</span><span class="it">1 TL Kreuzkümmel, 1 TL Pimentón dulce, 1 EL Apfelessig, Salz</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Kartoffeln mit Schale in Würfel schneiden, mit etwas Öl und Salz 35 Min. bei 220 °C knusprig backen.</li><li>Mojo rojo: Paprika grob schneiden, mit aufs Blech (15 Min.), dann sehr fein hacken und mit zerdrücktem Knoblauch, Kreuzkümmel, Pimentón, Essig, 1 EL Öl und Salz verrühren, mit der Gabel noch etwas zerdrücken. Ganz ohne Chili und ohne Mixer.</li><li>Tofu würfeln, in Stärke und Salz wenden, im restlichen Öl knusprig braten.</li><li>Tomaten, Gurke und kurz gegarte Erbsen als Salat.</li></ol><p class="keep"><b>Haltbarkeit:</b> Frisch essen; Mojo hält 5 Tage.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span><span class="chip">Schwefel</span></div><p>Paprika und Tomate liefern Vitamin C, Tofu Lysin, Knoblauch Schwefelverbindungen.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Achtung beim Einkaufen: „Mojo picón“ ist scharf. Der selbstgemachte bleibt mild.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Tofu → vegane Würstchen.</p></div></div>
+</article>
+</div></section>
+<section id="woche2"><div class="wrap"><h2>Rezepte Woche 2</h2><article class="recipe" id="m3">
+<header><span class="code">M3</span><div><h3>Paprika-Kartoffel-Gulasch mit Würstchen und Kidneybohnen</h3>
+<p class="meta"><span>Mittag, So–Mi</span><span>10 Teile (4 Tage)</span><span>ca. 50 Min.</span></p></div><button type="button" class="cookbtn" data-cook="m3" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>550</td><td><b>31 g</b></td><td>61 g</td><td>18 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>825</td><td><b>46 g</b></td><td>92 g</td><td>27 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">700 g <em>(≈ 3½ Packungen)</em></span><span class="it">vegane Tofu-Würstchen (Salchiveg)</span></li><li><span class="amt">500 g <em>(≈ 2 Gläser/Dosen)</em></span><span class="it">Kidneybohnen, abgetropft</span></li><li><span class="amt">2 kg</span><span class="it">Kartoffeln</span></li><li><span class="amt">1,5 kg <em>(≈ 10 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">600 g <em>(≈ 6 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">1 kg</span><span class="it">passierte Tomaten</span></li><li><span class="amt">150 g</span><span class="it">Tomatenmark</span></li><li><span class="amt">4 EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">400 g</span><span class="it">Sojajoghurt natur, ungesüßt</span></li><li><span class="amt">Würzen</span><span class="it">2 EL Pimentón dulce, 1 TL Pimentón ahumado dulce, Thymian, Gemüsebrühe, 1 EL Apfelessig</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Zwiebeln im Öl 10 Min. goldbraun braten, Würstchen in Scheiben mitbraten.</li><li>Tomatenmark und Pimentón kurz mitrösten, mit Passata und ca. 800 ml Brühe ablöschen.</li><li>Kartoffelwürfel und Thymian 20 Min. köcheln, Paprika und Bohnen dazu, weitere 10 Min. Mit Essig abschmecken, Joghurt separat.</li></ol><p class="keep"><b>Haltbarkeit:</b> 4 Tage, gut einfrierbar.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span></div><p>Rote Paprika liefert auch gekocht viel Vitamin C, Tofu-Würstchen und Kidneybohnen Lysin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Eintöpfe schmecken am 2. Tag besser und lassen sich gut einfrieren.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Würstchen → Tofu-Würfel, angebraten.</p></div></div>
+</article><article class="recipe" id="a5">
+<header><span class="code">A5</span><div><h3>Cremige Pilz-Tomaten-Pasta mit Tofu und Spinat</h3>
+<p class="meta"><span>Abend, So–Mo</span><span>5 Teile (2 Tage)</span><span>ca. 30 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a5" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>575</td><td><b>37 g</b></td><td>59 g</td><td>19 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>860</td><td><b>56 g</b></td><td>88 g</td><td>28 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">350 g</span><span class="it">Vollkornpasta, trocken</span></li><li><span class="amt">600 g <em>(≈ 2½ Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">600 g</span><span class="it">Champignons</span></li><li><span class="amt">300 g</span><span class="it">Spinat, TK oder frisch</span></li><li><span class="amt">200 ml <em>(≈ 1 Packung)</em></span><span class="it">Sojasahne zum Kochen</span></li><li><span class="amt">400 g</span><span class="it">passierte Tomaten</span></li><li><span class="amt">150 g <em>(≈ 2 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">40 g</span><span class="it">Hefeflocken</span></li><li><span class="amt">4 Zehen</span><span class="it">Knoblauch</span></li><li><span class="amt">Würzen</span><span class="it">1 EL Öl, Thymian, Salz, Pfeffer</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Tofu würfeln und knusprig anbraten, herausnehmen.</li><li>Zwiebel, Knoblauch und Pilze 8 Min. kräftig braten. Passata und Sojasahne dazu, 5 Min. köcheln, Spinat und Hefeflocken einrühren.</li><li>Pasta al dente unterheben, Tofu darauf.</li></ol><p class="keep"><b>Haltbarkeit:</b> 3 Tage.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Kupfer</span><span class="chip">Lysin</span></div><p>Pilze sind eine der besten Kupferquellen, Tofu liefert Lysin. Wenig Vitamin C: Paprikastreifen oder Beeren als Nachtisch.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Pilz-Trick: 30–60 Min. mit den Lamellen nach oben in die Sonne legen, das steigert ihren Vitamin-D-Gehalt.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Pilze → Zucchini.</p></div></div>
+</article><article class="recipe" id="a6">
+<header><span class="code">A6</span><div><h3>Milde Burrito-Bowl mit Soja-Hack, Kidneybohnen und Paprika</h3>
+<p class="meta"><span>Abend, Di–Mi (vorgekocht am So)</span><span>5 Teile (2 Tage)</span><span>ca. 30 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a6" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>540</td><td><b>30 g</b></td><td>78 g</td><td>10 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>810</td><td><b>45 g</b></td><td>117 g</td><td>15 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">175 g</span><span class="it">Sojagranulat, fein</span></li><li><span class="amt">250 g <em>(≈ 1 Glas/Dose)</em></span><span class="it">Kidneybohnen, abgetropft</span></li><li><span class="amt">300 g</span><span class="it">Basmatireis, trocken</span></li><li><span class="amt">600 g <em>(≈ 4 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">400 g <em>(≈ 3 Stück)</em></span><span class="it">Tomaten</span></li><li><span class="amt">200 g <em>(≈ 2 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">250 g</span><span class="it">Sojajoghurt natur, ungesüßt</span></li><li><span class="amt">3½ EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">1 Zitrone</span><span class="it">Zitronensaft</span></li><li><span class="amt">Würzen</span><span class="it">2 TL Kreuzkümmel, 2 TL Pimentón ahumado dulce, Oregano, 2 EL Sojasoße, optional Avocado</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Sojagranulat 10 Min. in heißer Brühe mit Sojasoße einweichen, dann mit halber Zwiebel knusprig braten. Gewürze und Bohnen dazu.</li><li>Reis kochen, Paprika in Streifen anbraten.</li><li>Salsa aus Tomaten, restlicher Zwiebel, Zitrone und Salz; Joghurt mit Zitrone verrühren.</li></ol><p class="keep"><b>Haltbarkeit:</b> 4 Tage.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span><span class="chip">Kupfer</span></div><p>Paprika, Tomate und Zitrone liefern Vitamin C, Soja und Bohnen Lysin und Kupfer.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Optional Avocado, wenn reif. Alternative: 1 TL Öl oder 10 g Cashews pro Portion für die gleichen gesunden Fette.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Reis → Vollkorn-Wraps (optional, ca. 1 Wrap pro Teil).</p></div></div>
+</article><article class="recipe" id="m4">
+<header><span class="code">M4</span><div><h3>Erdnuss-Nudelsalat mit Tofu, Karotte, Paprika und Gurke</h3>
+<p class="meta"><span>Mittag, Do–Sa (vorgekocht am Mi)</span><span>7,5 Teile (3 Tage)</span><span>ca. 35 Min.</span></p></div><button type="button" class="cookbtn" data-cook="m4" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>545</td><td><b>31 g</b></td><td>62 g</td><td>17 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>820</td><td><b>46 g</b></td><td>93 g</td><td>26 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">500 g</span><span class="it">Vollkornpasta, trocken</span></li><li><span class="amt">825 g <em>(≈ 3½ Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">300 g</span><span class="it">TK-Erbsen</span></li><li><span class="amt">450 g <em>(≈ 6 Stück)</em></span><span class="it">Karotten</span></li><li><span class="amt">600 g <em>(≈ 4 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">450 g <em>(≈ 2 Stück)</em></span><span class="it">Salatgurke</span></li><li><span class="amt">90 g</span><span class="it">Erdnussmus (100 % Erdnuss)</span></li><li><span class="amt">6 EL</span><span class="it">Sojasoße</span></li><li><span class="amt">2 Zitronen</span><span class="it">Zitronensaft</span></li><li><span class="amt">30 g</span><span class="it">Ingwer, frisch</span></li><li><span class="amt">Würzen</span><span class="it">1 EL Apfelessig, 100 ml warmes Wasser, 1 Knoblauchzehe</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Nudeln kochen und kalt abspülen. Tofu würfeln, mit etwas Sojasoße 25 Min. bei 200 °C backen.</li><li>Erbsen kurz blanchieren, Gemüse in feine Streifen schneiden.</li><li>Erdnussmus, Sojasoße, Zitrone, Ingwer, Knoblauch, Essig und Wasser glatt rühren, alles mischen.</li></ol><p class="keep"><b>Haltbarkeit:</b> 3 Tage.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Kupfer</span><span class="chip">Lysin</span></div><p>Paprika und Zitrone liefern Vitamin C, Erdnuss Kupfer, Tofu und Erbsen Lysin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Kalt gegessene Nudeln enthalten mehr resistente Stärke.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Gurke → Brokkoli, kurz blanchiert.</p></div></div>
+</article><article class="recipe" id="a7">
+<header><span class="code">A7</span><div><h3>Tempeh-Gyros mit Reis, Tomaten-Gurken-Salat und Joghurt</h3>
+<p class="meta"><span>Abend, Do–Fr (vorgekocht am Mi)</span><span>5 Teile (2 Tage)</span><span>ca. 30 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a7" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>525</td><td><b>28 g</b></td><td>62 g</td><td>19 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>790</td><td><b>42 g</b></td><td>93 g</td><td>28 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">500 g</span><span class="it">Tempeh</span></li><li><span class="amt">250 g</span><span class="it">Basmatireis, trocken</span></li><li><span class="amt">500 g <em>(≈ 3 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">250 g <em>(≈ 2 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">400 g <em>(≈ 3 Stück)</em></span><span class="it">Tomaten</span></li><li><span class="amt">300 g <em>(≈ 1 Stück)</em></span><span class="it">Salatgurke</span></li><li><span class="amt">300 g</span><span class="it">Sojajoghurt natur, ungesüßt</span></li><li><span class="amt">3 EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">4 Zehen</span><span class="it">Knoblauch</span></li><li><span class="amt">Würzen</span><span class="it">2 TL Oregano, 1 TL Pimentón dulce, ½ TL Kreuzkümmel, 2 EL Sojasoße, Saft ½ Zitrone</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Tempeh in dünne Streifen schneiden, mit Öl, Sojasoße, Zitrone und Gewürzen marinieren.</li><li>Mit Zwiebel und Paprika in der Pfanne 10 Min. kräftig braten. Reis kochen.</li><li>Salat aus Tomate und Gurke; Joghurt mit Knoblauch und Salz verrühren.</li></ol><p class="keep"><b>Haltbarkeit:</b> 4 Tage; Salat frisch schneiden.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span></div><p>Paprika und Tomate liefern Vitamin C, Tempeh Lysin und Prolin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Tempeh ist fermentiert und gut verdaulich.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Tempeh → Tofu in Streifen.</p></div></div>
+</article><article class="recipe" id="a8">
+<header><span class="code">A8</span><div><h3>Tofu-Patties mit Kartoffelspalten und Karotten-Gurken-Salat</h3>
+<p class="meta"><span>Abend, Sa (frisch)</span><span>2,5 Teile (1 Tag)</span><span>ca. 40 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a8" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>565</td><td><b>30 g</b></td><td>62 g</td><td>21 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>850</td><td><b>45 g</b></td><td>93 g</td><td>32 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">325 g <em>(≈ 1½ Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">38 g</span><span class="it">Haferflocken</span></li><li><span class="amt">15 g</span><span class="it">Hefeflocken</span></li><li><span class="amt">50 g <em>(≈ 1 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">625 g</span><span class="it">Kartoffeln</span></li><li><span class="amt">2 EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">150 g <em>(≈ 2 Stück)</em></span><span class="it">Karotten</span></li><li><span class="amt">150 g <em>(≈ 1 Stück)</em></span><span class="it">Salatgurke</span></li><li><span class="amt">100 g</span><span class="it">Sojajoghurt natur, ungesüßt</span></li><li><span class="amt">Würzen</span><span class="it">1 TL Pimentón ahumado dulce, 1 EL Sojasoße, 1 EL Speisestärke, Apfelessig</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Kartoffelspalten mit etwas Öl und Salz 30 Min. bei 220 °C backen.</li><li>Tofu zerbröseln, mit Haferflocken, Hefeflocken, fein gehackter Zwiebel, Stärke, Sojasoße und Pimentón verkneten, 10 Min. ruhen lassen. 5 Patties formen (Sie 2, Er 3), 4 Min. pro Seite braten.</li><li>Karotten raspeln, Gurke würfeln, mit Joghurt, Essig und Salz mischen.</li></ol><p class="keep"><b>Haltbarkeit:</b> Frisch essen; rohe Patties lassen sich einfrieren.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Lysin</span><span class="chip">Beta-Carotin</span><span class="chip">Silizium</span></div><p>Tofu liefert Lysin, Karotten Beta-Carotin, Hafer Silizium und Kupfer. Vitamin C: Paprikastreifen dazu.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Optional mit Vollkornbrötchen oder Wrap als Burger.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Haferflocken → Paniermehl.</p></div></div>
+</article></div></section>
+<section id="woche3"><div class="wrap"><h2>Rezepte Woche 3</h2><article class="recipe" id="m5">
+<header><span class="code">M5</span><div><h3>Rotes Linsen-Dal mit Tofu, Spinat und Basmati</h3>
+<p class="meta"><span>Mittag, So–Mi</span><span>10 Teile (4 Tage)</span><span>ca. 35 Min.</span></p></div><button type="button" class="cookbtn" data-cook="m5" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>540</td><td><b>31 g</b></td><td>71 g</td><td>13 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>810</td><td><b>46 g</b></td><td>106 g</td><td>20 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">350 g</span><span class="it">rote Linsen, trocken</span></li><li><span class="amt">1 kg <em>(≈ 4 Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">800 g</span><span class="it">Spinat, TK oder frisch</span></li><li><span class="amt">800 g</span><span class="it">passierte Tomaten</span></li><li><span class="amt">400 g <em>(≈ 4 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">500 g <em>(≈ 6 Stück)</em></span><span class="it">Karotten</span></li><li><span class="amt">500 g</span><span class="it">Basmatireis, trocken</span></li><li><span class="amt">200 ml <em>(≈ 1 Packung)</em></span><span class="it">Sojasahne zum Kochen</span></li><li><span class="amt">40 g</span><span class="it">Ingwer, frisch</span></li><li><span class="amt">8 Zehen</span><span class="it">Knoblauch</span></li><li><span class="amt">Würzen</span><span class="it">2 TL Kurkuma, 1½ TL Kreuzkümmel, ½ TL Zimt, Pfeffer, 1 EL Öl, Saft 1 Zitrone</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Zwiebel, Karotten, Ingwer, Knoblauch im Öl anschwitzen, Gewürze 1 Min. mitrösten.</li><li>Linsen, Passata und ca. 1,2 l Wasser dazu, 15 Min. köcheln, bis die Linsen zerfallen.</li><li>Tofuwürfel (vorher angebraten), Spinat und Sojasahne unterrühren, mit Zitrone und Salz abschmecken. Reis separat.</li></ol><p class="keep"><b>Haltbarkeit:</b> 4 Tage, gut einfrierbar.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Lysin</span><span class="chip">Kupfer</span><span class="chip">Vitamin C</span></div><p>Linsen und Tofu liefern viel Lysin, Linsen auch Kupfer. Spinat, Tomate und Zitrone bringen Vitamin C.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Linsen liefern Eisen; das Vitamin C aus der Zitrone verbessert die Aufnahme deutlich.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Rote Linsen → mehr Tofu.</p></div></div>
+</article><article class="recipe" id="a9">
+<header><span class="code">A9</span><div><h3>Würstchen-Pasta in Tomaten-Paprika-Sauce</h3>
+<p class="meta"><span>Abend, So–Mo</span><span>5 Teile (2 Tage)</span><span>ca. 25 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a9" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>540</td><td><b>30 g</b></td><td>68 g</td><td>15 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>810</td><td><b>45 g</b></td><td>102 g</td><td>22 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">375 g</span><span class="it">Vollkornpasta, trocken</span></li><li><span class="amt">250 g <em>(≈ 1 Packung)</em></span><span class="it">vegane Tofu-Würstchen (Salchiveg)</span></li><li><span class="amt">600 g <em>(≈ 4 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">400 g <em>(≈ 2 Stück)</em></span><span class="it">Zucchini</span></li><li><span class="amt">600 g</span><span class="it">passierte Tomaten</span></li><li><span class="amt">200 g <em>(≈ 2 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">100 ml <em>(≈ ½ Packung)</em></span><span class="it">Sojasahne zum Kochen</span></li><li><span class="amt">25 g</span><span class="it">Hefeflocken</span></li><li><span class="amt">Würzen</span><span class="it">1 EL Öl, Oregano, 1 TL Pimentón dulce, Salz, Pfeffer</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Würstchen in Scheiben braten, herausnehmen.</li><li>Zwiebel, Paprika und Zucchini 8 Min. braten, Passata dazu, 10 Min. köcheln, Sojasahne und Hefeflocken einrühren.</li><li>Würstchen und Pasta unterheben.</li></ol><p class="keep"><b>Haltbarkeit:</b> 3 Tage.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span></div><p>Gekochte Paprika und Tomate liefern Vitamin C und Lycopin, Tofu-Würstchen Lysin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Würstchen sind praktisch, aber salzig: beim Abschmecken sparsam salzen.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Zucchini → Brokkoli.</p></div></div>
+</article><article class="recipe" id="a10">
+<header><span class="code">A10</span><div><h3>Gefüllte Paprika mit Soja-Reis-Füllung in Tomatensauce</h3>
+<p class="meta"><span>Abend, Di–Mi (vorgekocht am So)</span><span>5 Teile (2 Tage)</span><span>ca. 55 Min., davon 40 Min. Ofen</span></p></div><button type="button" class="cookbtn" data-cook="a10" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>540</td><td><b>35 g</b></td><td>70 g</td><td>12 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>810</td><td><b>52 g</b></td><td>105 g</td><td>18 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">1 kg <em>(≈ 7 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">150 g</span><span class="it">Sojagranulat, fein</span></li><li><span class="amt">250 g <em>(≈ 1 Packung)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">250 g</span><span class="it">Basmatireis, trocken</span></li><li><span class="amt">200 g <em>(≈ 2 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">600 g</span><span class="it">passierte Tomaten</span></li><li><span class="amt">40 g</span><span class="it">Hefeflocken</span></li><li><span class="amt">2½ EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">200 g</span><span class="it">Sojajoghurt natur, ungesüßt</span></li><li><span class="amt">Würzen</span><span class="it">Oregano, Thymian, 1 TL Pimentón dulce, 1 EL Sojasoße, Gemüsebrühe</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Reis halbgar kochen. Sojagranulat in heißer Brühe einweichen, mit Zwiebel und zerbröseltem Tofu anbraten, Reis, Hefeflocken und Gewürze untermischen.</li><li>Paprika halbieren, füllen, in eine Form mit der gewürzten Passata setzen.</li><li>Mit Alufolie fest abgedeckt (Ränder gut andrücken) 30 Min., dann Folie ab und offen 10 Min. bei 190 °C backen. Ohne Abdeckung geht es auch: 40 Min. offen backen und nach 20 Min. ca. 100 ml Wasser in die Sauce gießen, damit nichts austrocknet; die Paprika werden oben etwas dunkler. Mit Joghurt servieren.</li></ol><p class="keep"><b>Haltbarkeit:</b> 4 Tage.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span></div><p>Eine ganze rote Paprika pro Portion: Vitamin C satt, auch gebacken. Soja und Tofu liefern Lysin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Gutes Gericht zum Vorkochen, lässt sich in der Form aufwärmen.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Sojagranulat → mehr Tofu.</p></div></div>
+</article><article class="recipe" id="m6">
+<header><span class="code">M6</span><div><h3>Bratkartoffeln mit Zwiebeln, Knusper-Tofu und Brokkoli</h3>
+<p class="meta"><span>Mittag, Do–Sa (vorgekocht am Mi)</span><span>7,5 Teile (3 Tage)</span><span>ca. 50 Min.</span></p></div><button type="button" class="cookbtn" data-cook="m6" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>570</td><td><b>32 g</b></td><td>60 g</td><td>21 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>855</td><td><b>48 g</b></td><td>90 g</td><td>32 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">1,9 kg</span><span class="it">Kartoffeln</span></li><li><span class="amt">525 g <em>(≈ 5 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">1,05 kg <em>(≈ 4 Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">900 g <em>(≈ 2 Köpfe)</em></span><span class="it">Brokkoli</span></li><li><span class="amt">6 EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">4½ EL</span><span class="it">Speisestärke</span></li><li><span class="amt">38 g</span><span class="it">Hefeflocken</span></li><li><span class="amt">375 g</span><span class="it">Sojajoghurt natur, ungesüßt</span></li><li><span class="amt">Würzen</span><span class="it">1 TL Pimentón dulce, Salz, Pfeffer, optional etwas Kreuzkümmel; für den Dip 1 Knoblauchzehe und etwas Zitrone</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Kartoffeln mit Schale ca. 20 Min. kochen, bis sie fast gar sind, abgießen und abkühlen lassen (gern schon am Vortag). Gekochte, kalte Kartoffeln werden beim Braten am knusprigsten.</li><li>Kartoffeln in Scheiben schneiden. In der Pfanne in 2–3 Durchgängen mit etwas Öl bei mittlerer bis hoher Hitze 10–12 Min. braten, erst wenden, wenn die Unterseite goldbraun ist. Zwiebelringe die letzten 5 Min. mitbraten, mit Salz, Pfeffer und Pimentón würzen. Einfacher für die große Menge: alles auf einem Blech mit Öl 30 Min. bei 220 °C backen, einmal wenden.</li><li>Tofu würfeln, in Stärke, Hefeflocken und Salz wenden und im restlichen Öl knusprig braten. Brokkoli 4–5 Min. dämpfen.</li><li>Joghurt mit Knoblauch, Zitrone und Salz verrühren. Zum Aufwärmen die Bratkartoffeln in der Pfanne kurz anbraten, dann werden sie wieder knusprig.</li></ol><p class="keep"><b>Haltbarkeit:</b> 3 Tage; in der Pfanne aufwärmen.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span><span class="chip">Schwefel</span></div><p>Brokkoli und Kartoffeln liefern Vitamin C, Tofu Lysin und Prolin, Zwiebeln Schwefelverbindungen.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Abgekühlte und wieder erwärmte Kartoffeln enthalten mehr resistente Stärke, die die Darmflora füttert und den Blutzucker sanfter ansteigen lässt.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Tofu → vegane Würstchen. Brokkoli → Paprika, mitgebraten.</p></div></div>
+</article><article class="recipe" id="a11">
+<header><span class="code">A11</span><div><h3>Brokkoli-Cashew-Tofu mit Ingwer-Soja-Sauce und Reis</h3>
+<p class="meta"><span>Abend, Do–Fr (vorgekocht am Mi)</span><span>5 Teile (2 Tage)</span><span>ca. 30 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a11" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>580</td><td><b>30 g</b></td><td>59 g</td><td>24 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>870</td><td><b>45 g</b></td><td>88 g</td><td>36 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">700 g <em>(≈ 3 Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">750 g <em>(≈ 2 Köpfe)</em></span><span class="it">Brokkoli</span></li><li><span class="amt">400 g <em>(≈ 3 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">60 g</span><span class="it">Cashews</span></li><li><span class="amt">250 g</span><span class="it">Basmatireis, trocken</span></li><li><span class="amt">4 EL</span><span class="it">Sojasoße</span></li><li><span class="amt">20 g</span><span class="it">Ingwer, frisch</span></li><li><span class="amt">3 EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">2 EL</span><span class="it">Speisestärke</span></li><li><span class="amt">Würzen</span><span class="it">1 Knoblauchzehe, 1 EL Apfelessig</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Tofu würfeln, in 1 EL Stärke wenden und knusprig braten.</li><li>Brokkoli und Paprika 5 Min. im Wok braten, Cashews kurz mitrösten.</li><li>Sojasoße, Ingwer, Knoblauch, Essig und 150 ml Wasser dazu, mit restlicher Stärke binden, Tofu unterheben. Reis separat.</li></ol><p class="keep"><b>Haltbarkeit:</b> 4 Tage.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Kupfer</span><span class="chip">Lysin</span></div><p>Brokkoli und Paprika: viel Vitamin C. Cashews: Kupfer. Tofu: Lysin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Schnell, wenig Abwasch, alle Lieblingszutaten.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Cashews → Erdnüsse oder 1 EL Erdnussmus in die Sauce.</p></div></div>
+</article><article class="recipe" id="a12">
+<header><span class="code">A12</span><div><h3>Wraps oder Bowl mit Ofen-Tofu, Paprika und Joghurt-Dip</h3>
+<p class="meta"><span>Abend, Sa (frisch)</span><span>2,5 Teile (1 Tag)</span><span>ca. 30 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a12" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>540</td><td><b>31 g</b></td><td>43 g</td><td>26 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>810</td><td><b>46 g</b></td><td>64 g</td><td>39 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">2 Wraps</span><span class="it">Vollkorn-Wraps (optional)</span></li><li><span class="amt">400 g <em>(≈ 1½ Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">250 g <em>(≈ 2 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">200 g <em>(≈ 2 Stück)</em></span><span class="it">Tomaten</span></li><li><span class="amt">125 g <em>(≈ 1 Stück)</em></span><span class="it">Salatgurke</span></li><li><span class="amt">175 g</span><span class="it">Sojajoghurt natur, ungesüßt</span></li><li><span class="amt">2 EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">Würzen</span><span class="it">1 TL Pimentón ahumado dulce, ½ TL Kreuzkümmel, 1 EL Sojasoße, Knoblauch, Zitrone</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Tofu in Streifen schneiden, mit Öl, Sojasoße und Gewürzen 20 Min. bei 200 °C backen, Paprikastreifen mit aufs Blech.</li><li>Joghurt mit Knoblauch, Zitrone und Salz verrühren, Tomate und Gurke schneiden.</li><li>Wraps kurz erwärmen und füllen. Sie 1 Wrap, Er 1½ bis 2 Wraps.</li></ol><p class="keep"><b>Haltbarkeit:</b> Frisch essen.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span></div><p>Paprika und Tomate liefern Vitamin C, Tofu Lysin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Ohne Wraps: 50 g Basmati (trocken) pro Teil, gleiche Kalorien.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Wraps (optional) → Reis-Bowl.</p></div></div>
+</article></div></section>
+<section id="woche4"><div class="wrap"><h2>Rezepte Woche 4</h2><article class="recipe" id="m7">
+<header><span class="code">M7</span><div><h3>Weiße-Bohnen-Eintopf mit Würstchen, Karotten und Kartoffeln</h3>
+<p class="meta"><span>Mittag, So–Mi</span><span>10 Teile (4 Tage)</span><span>ca. 40 Min.</span></p></div><button type="button" class="cookbtn" data-cook="m7" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>550</td><td><b>31 g</b></td><td>63 g</td><td>17 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>825</td><td><b>46 g</b></td><td>94 g</td><td>26 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">700 g <em>(≈ 3 Gläser/Dosen)</em></span><span class="it">weiße Bohnen, abgetropft</span></li><li><span class="amt">700 g <em>(≈ 3½ Packungen)</em></span><span class="it">vegane Tofu-Würstchen (Salchiveg)</span></li><li><span class="amt">2 kg</span><span class="it">Kartoffeln</span></li><li><span class="amt">600 g <em>(≈ 8 Stück)</em></span><span class="it">Karotten</span></li><li><span class="amt">800 g <em>(≈ 5 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">500 g <em>(≈ 5 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">1,2 kg</span><span class="it">passierte Tomaten</span></li><li><span class="amt">500 g</span><span class="it">Spinat, TK oder frisch</span></li><li><span class="amt">4 EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">Würzen</span><span class="it">1 TL Pimentón ahumado dulce, Thymian, Oregano, Gemüsebrühe, 1 EL Apfelessig</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Zwiebel und Würstchenscheiben im Öl anbraten.</li><li>Kartoffeln, Karotten, Paprika, Passata, Gewürze und ca. 1 l Brühe dazu, 20 Min. köcheln.</li><li>Bohnen und Spinat 5 Min. mitgaren, mit Essig abschmecken.</li></ol><p class="keep"><b>Haltbarkeit:</b> 4 Tage, gut einfrierbar.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Lysin</span><span class="chip">Vitamin C</span><span class="chip">Beta-Carotin</span></div><p>Bohnen und Tofu-Würstchen liefern Lysin, Paprika und Spinat Vitamin C, Karotten Beta-Carotin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Weiße Bohnen liefern lösliche Ballaststoffe, die lange satt machen.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Würstchen → angebratener Tofu.</p></div></div>
+</article><article class="recipe" id="a13">
+<header><span class="code">A13</span><div><h3>Ofen-Pasta mit Brokkoli und cremiger Hefeflocken-Sauce</h3>
+<p class="meta"><span>Abend, So–Mo</span><span>5 Teile (2 Tage)</span><span>ca. 40 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a13" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>580</td><td><b>37 g</b></td><td>62 g</td><td>19 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>870</td><td><b>56 g</b></td><td>93 g</td><td>28 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">350 g</span><span class="it">Vollkornpasta, trocken</span></li><li><span class="amt">600 g <em>(≈ 2½ Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">750 g <em>(≈ 2 Köpfe)</em></span><span class="it">Brokkoli</span></li><li><span class="amt">150 ml <em>(≈ 1 Packung)</em></span><span class="it">Sojasahne zum Kochen</span></li><li><span class="amt">300 ml</span><span class="it">Sojadrink, ungesüßt</span></li><li><span class="amt">50 g</span><span class="it">Hefeflocken</span></li><li><span class="amt">2 EL</span><span class="it">Speisestärke</span></li><li><span class="amt">100 g <em>(≈ 1 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">Würzen</span><span class="it">1 EL Öl, 1 Knoblauchzehe, Muskat optional, Salz, Pfeffer</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Pasta 2 Min. kürzer als angegeben kochen, Brokkoli die letzten 3 Min. mitkochen.</li><li>Zwiebel und Knoblauch anschwitzen, Sojadrink, Sojasahne und Hefeflocken dazu, mit Stärke binden.</li><li>Pasta, Brokkoli und zerbröselten Tofu in eine Form, Sauce darüber, 20 Min. bei 200 °C backen.</li></ol><p class="keep"><b>Haltbarkeit:</b> 3 Tage.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span></div><p>Brokkoli liefert Vitamin C, Tofu und Sojadrink Lysin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Hefeflocken geben den käsigen Geschmack und liefern B-Vitamine.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Brokkoli → Paprika und Zucchini.</p></div></div>
+</article><article class="recipe" id="a14">
+<header><span class="code">A14</span><div><h3>Süßkartoffel-Tempeh-Blech mit Brokkoli und Erdnuss-Dip</h3>
+<p class="meta"><span>Abend, Di–Mi (vorgekocht am So)</span><span>5 Teile (2 Tage)</span><span>ca. 40 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a14" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>530</td><td><b>30 g</b></td><td>52 g</td><td>23 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>795</td><td><b>45 g</b></td><td>78 g</td><td>34 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">500 g</span><span class="it">Tempeh</span></li><li><span class="amt">900 g</span><span class="it">Süßkartoffeln</span></li><li><span class="amt">750 g <em>(≈ 2 Köpfe)</em></span><span class="it">Brokkoli</span></li><li><span class="amt">150 g <em>(≈ 2 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">3 EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">50 g</span><span class="it">Erdnussmus (100 % Erdnuss)</span></li><li><span class="amt">2½ EL</span><span class="it">Sojasoße</span></li><li><span class="amt">½ Zitrone</span><span class="it">Zitronensaft</span></li><li><span class="amt">Würzen</span><span class="it">1 TL Pimentón dulce, Ingwer, warmes Wasser für den Dip</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Süßkartoffelwürfel mit Öl und Pimentón 15 Min. bei 200 °C backen.</li><li>Tempehwürfel (mit Sojasoße mariniert), Brokkoli und Zwiebel dazu, weitere 15–20 Min.</li><li>Dip: Erdnussmus, Sojasoße, Zitrone, Ingwer und etwas Wasser verrühren.</li></ol><p class="keep"><b>Haltbarkeit:</b> 4 Tage.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Beta-Carotin</span><span class="chip">Kupfer</span></div><p>Brokkoli: Vitamin C. Süßkartoffel: Beta-Carotin. Erdnuss und Tempeh: Kupfer und Lysin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Tempeh-Tipp: vorher 10 Min. dämpfen, dann schmeckt er milder.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Tempeh → Tofu.</p></div></div>
+</article><article class="recipe" id="m8">
+<header><span class="code">M8</span><div><h3>Kalte Sushi-Bowl mit Ingwer-Tofu, Gurke, Karotte und Erbsen</h3>
+<p class="meta"><span>Mittag, Do–Sa (vorgekocht am Mi)</span><span>7,5 Teile (3 Tage)</span><span>ca. 30 Min.</span></p></div><button type="button" class="cookbtn" data-cook="m8" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>550</td><td><b>29 g</b></td><td>63 g</td><td>20 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>825</td><td><b>44 g</b></td><td>94 g</td><td>30 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">450 g</span><span class="it">Basmatireis, trocken</span></li><li><span class="amt">1,05 kg <em>(≈ 4 Packungen)</em></span><span class="it">fester Tofu</span></li><li><span class="amt">600 g <em>(≈ 2 Stück)</em></span><span class="it">Salatgurke</span></li><li><span class="amt">450 g <em>(≈ 6 Stück)</em></span><span class="it">Karotten</span></li><li><span class="amt">300 g</span><span class="it">TK-Erbsen</span></li><li><span class="amt">7½ EL</span><span class="it">Sojasoße</span></li><li><span class="amt">30 g</span><span class="it">Ingwer, frisch</span></li><li><span class="amt">60 g</span><span class="it">Cashews</span></li><li><span class="amt">3 EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">Würzen</span><span class="it">2 EL Apfelessig, optional Sesam statt Cashews</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Reis kochen und mit 2 EL Apfelessig und einer Prise Salz würzen, auskühlen lassen.</li><li>Tofu würfeln, mit Sojasoße und geriebenem Ingwer marinieren und knusprig braten oder backen.</li><li>Gurke und Karotte in Stifte, Erbsen kurz blanchieren. Sojasoße mit Ingwer als Dip, Cashews gehackt darüber.</li></ol><p class="keep"><b>Haltbarkeit:</b> 3 Tage.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Lysin</span><span class="chip">Kupfer</span><span class="chip">Beta-Carotin</span></div><p>Tofu und Erbsen liefern Lysin, Cashews Kupfer, Karotten Beta-Carotin. Vitamin C: ein paar Paprikastreifen dazu.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Schmeckt kalt am besten, perfekt für unterwegs.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Cashews → Sesam oder Kürbiskerne.</p></div></div>
+</article><article class="recipe" id="a15">
+<header><span class="code">A15</span><div><h3>Gebratener Gemüsereis mit Soja-Hack, Paprika und Erbsen</h3>
+<p class="meta"><span>Abend, Do–Fr (vorgekocht am Mi)</span><span>5 Teile (2 Tage)</span><span>ca. 30 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a15" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>545</td><td><b>30 g</b></td><td>77 g</td><td>10 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>820</td><td><b>45 g</b></td><td>116 g</td><td>15 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">150 g</span><span class="it">Sojagranulat, fein</span></li><li><span class="amt">300 g</span><span class="it">Basmatireis, trocken</span></li><li><span class="amt">600 g <em>(≈ 4 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">250 g</span><span class="it">TK-Erbsen</span></li><li><span class="amt">250 g <em>(≈ 3 Stück)</em></span><span class="it">Karotten</span></li><li><span class="amt">200 g <em>(≈ 2 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">3½ EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">3½ EL</span><span class="it">Sojasoße</span></li><li><span class="amt">25 g</span><span class="it">Hefeflocken</span></li><li><span class="amt">300 g</span><span class="it">Sojajoghurt natur, ungesüßt</span></li><li><span class="amt">20 g</span><span class="it">Ingwer, frisch</span></li><li><span class="amt">Würzen</span><span class="it">1 Knoblauchzehe, 1 TL Kurkuma, Pfeffer, Gemüsebrühe; für den Joghurt etwas Zitrone und Salz</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Reis kochen und auskühlen lassen (am besten schon mittags oder am Vortag, dann klebt er beim Braten nicht).</li><li>Sojagranulat 10 Min. in heißer Brühe mit der Hälfte der Sojasoße einweichen, ausdrücken und im Öl krümelig-knusprig braten.</li><li>Zwiebel, Karotten, Paprika, Ingwer und Knoblauch dazu, 5 Min. braten. Erbsen, Reis, Kurkuma und restliche Sojasoße dazu, alles 5 Min. weiterbraten, bis der Reis leicht anröstet. Hefeflocken unterrühren.</li><li>Mit Zitronen-Joghurt servieren.</li></ol><p class="keep"><b>Haltbarkeit:</b> 3 Tage; Reis nur einmal aufwärmen.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span><span class="chip">Beta-Carotin</span></div><p>Paprika liefert Vitamin C, Soja und Erbsen Lysin, Karotten Beta-Carotin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Eine Pfanne, ein Topf, kein Mixer: Gebratener Reis ist ein klassisches Resteessen und lässt sich gut aufwärmen.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Sojagranulat → zerbröselter Tofu (200 g für die Batch mehr Tofu).</p></div></div>
+</article><article class="recipe" id="a16">
+<header><span class="code">A16</span><div><h3>Würstchen-Pfanne mit Bratkartoffeln, Paprika und Gurken-Joghurt</h3>
+<p class="meta"><span>Abend, Sa (frisch)</span><span>2,5 Teile (1 Tag)</span><span>ca. 30 Min.</span></p></div><button type="button" class="cookbtn" data-cook="a16" aria-pressed="false">Als gekocht abhaken</button></header>
+<table class="macros"><thead><tr><th></th><th>kcal</th><th>Protein</th><th>KH</th><th>Fett</th></tr></thead>
+<tbody><tr class="sie"><th>Sie <span>1 Teil</span></th><td>555</td><td><b>29 g</b></td><td>55 g</td><td>23 g</td></tr>
+<tr class="er"><th>Er <span>1,5 Teile</span></th><td>830</td><td><b>44 g</b></td><td>82 g</td><td>34 g</td></tr></tbody></table>
+<p class="mnote">Er streut zusätzlich 1 EL Kürbiskerne darüber (+85 kcal, +4,5 g Protein).</p>
+<div class="cols"><div><h4>Zutaten für die ganze Batch</h4><ul class="ingr"><li><span class="amt">200 g <em>(≈ 1 Packung)</em></span><span class="it">vegane Tofu-Würstchen (Salchiveg)</span></li><li><span class="amt">625 g</span><span class="it">Kartoffeln</span></li><li><span class="amt">250 g <em>(≈ 2 Stück)</em></span><span class="it">rote Paprika</span></li><li><span class="amt">125 g <em>(≈ 1 Stück)</em></span><span class="it">Zwiebeln</span></li><li><span class="amt">2 EL</span><span class="it">Pflanzenöl</span></li><li><span class="amt">200 g <em>(≈ 1 Stück)</em></span><span class="it">Salatgurke</span></li><li><span class="amt">125 g</span><span class="it">Sojajoghurt natur, ungesüßt</span></li><li><span class="amt">Würzen</span><span class="it">1 TL Pimentón dulce, Salz, Pfeffer, Knoblauch</span></li></ul></div>
+<div><h4>Zubereitung</h4><ol class="steps"><li>Kartoffeln gut waschen (oder schälen) und in gleichmäßig 3–4 mm dünne Scheiben schneiden. Mit der Hälfte des Öls in eine große Pfanne geben (höchstens 2 Lagen, sonst in 2 Pfannen oder nacheinander), 4–5 EL Wasser und etwas Salz dazu, mit Alufolie oder einem großen Teller abdecken und bei mittlerer Hitze ca. 10 Min. garen, bis die Scheiben fast weich sind und das Wasser verdampft ist. Dann offen mit dem restlichen Öl bei mittlerer bis hoher Hitze weitere 10–12 Min. braten und nur alle 3–4 Min. wenden, damit sie eine Kruste bekommen. Rohe Kartoffeln nur 15 Min. zu braten reicht nicht, sie bleiben innen hart. Abkürzung: Am Vortag mit Schale gekochte, kalte Kartoffeln brauchen nur 10–12 Min. in der Pfanne, ganz ohne Wasser.</li><li>Würstchen, Paprika und Zwiebel dazugeben, weitere 8 Min. braten, würzen.</li><li>Gurke raspeln, mit Joghurt, Knoblauch und Salz verrühren.</li></ol><p class="keep"><b>Haltbarkeit:</b> Frisch essen.</p></div></div>
+<div class="facts"><div class="koll"><h4>Beitrag zur Kollagenbildung</h4><div class="chips"><span class="chip">Vitamin C</span><span class="chip">Lysin</span></div><p>Paprika und Kartoffeln liefern Vitamin C, Tofu-Würstchen Lysin.</p></div>
+<div><h4>Außerdem gut zu wissen</h4><p>Schnelles Samstagsessen mit wenig Abwasch.</p></div>
+<div class="swap"><h4>Alternative</h4><p>Würstchen → Tofu.</p></div></div>
+</article></div></section>
+
+<section id="einkauf"><div class="wrap">
+<h2>Einkaufslisten</h2>
+<p class="intro">Zum Abhaken beim Einkaufen. Automatisch summiert aus allen Rezepten der Woche, inklusive beider Frühstücke für 7 Tage, 4 Shakes pro Person sowie Tee und Eiskaffee. Am besten auf zwei Einkäufe verteilen: Samstag für den Kochsonntag, Mittwoch für den Kochabend. Gewürze, Öl, Sojasoße und Speisestärke sind Vorrat und reichen meist mehrere Wochen.</p>
+<div id="shoplists"><p class="empty">Einkaufslisten werden geladen …</p></div>
+</div></section>
+
+<section id="kollagen"><div class="wrap">
+<h2>Kollagen und Nährstoffe</h2>
+<p class="intro">Pflanzen enthalten kein Kollagen, und auch tierisches Kollagen wird im Darm erst in Aminosäuren zerlegt. Der Körper baut sein Kollagen selbst. Dafür braucht er drei Dinge: die richtigen Bausteine, die richtigen Helfer und möglichst wenig, was Kollagen zerstört. Jedes Gericht in diesem Buch deckt mindestens zwei dieser Punkte ab.</p>
+<div class="kgrid">
+<div class="kcard"><h3>Bausteine: Glycin, Prolin, Lysin</h3><p>Kollagen besteht zu etwa einem Drittel aus Glycin, dazu viel Prolin. Beides kann der Körper teilweise selbst bilden, profitiert aber von ausreichend Protein insgesamt. Lysin ist essenziell und in Getreide knapp.</p><p><b>Vegane Quellen:</b> Tofu, Tempeh, Tofu-Würstchen, Sojagranulat, Erbsen, Linsen, Bohnen, Kichererbsen (Lysin), Kürbiskerne, Erdnüsse.</p></div>
+<div class="kcard"><h3>Helfer Nr. 1: Vitamin C</h3><p>Ohne Vitamin C können die Enzyme, die Prolin und Lysin im Kollagen „verankern“, nicht arbeiten. Das ist der best belegte Hebel.</p><p><b>Quellen:</b> rote Paprika (ca. 140 mg/100 g), Brokkoli, Beeren, Kiwi, Papaya, Orange, Spinat, Tomate, Zitrone. Faustregel: zu jeder Mahlzeit etwas davon.</p></div>
+<div class="kcard"><h3>Helfer: Kupfer und Zink</h3><p>Kupfer braucht das Enzym, das Kollagenfasern quervernetzt (Lysyloxidase), Zink ist an Aufbau und Reparatur beteiligt.</p><p><b>Wichtig für euch:</b> Hoch dosiertes Zink (dauerhaft über ca. 25 mg/Tag) kann die Kupferaufnahme hemmen. Prüft die Dosis eures Zink-Präparats. Kupferquellen: Cashews, Kürbiskerne, Erdnüsse, Pilze, Hafer, Linsen, Tempeh.</p></div>
+<div class="kcard"><h3>Schutz: was Kollagen abbaut</h3><p>Der größte Kollagen-Killer ist UV-Strahlung, gerade auf Gran Canaria. Täglicher Sonnenschutz im Gesicht bringt mehr als jedes Lebensmittel. Zucker fördert sogenannte AGEs, die Kollagen versteifen (ihr meidet Zucker bereits).</p><p><b>Unterstützend:</b> Carotinoide und Lycopin (Tomate, Paprika, Karotte, Süßkartoffel), Polyphenole (Beeren), genug Schlaf.</p></div>
+<div class="kcard"><h3>Training hilft mit</h3><p>Krafttraining und Sprungbelastungen (Padel, Laufen) regen die Kollagenbildung in Sehnen und Bindegewebe an. Studien deuten darauf hin, dass Vitamin C plus Protein rund um das Training diesen Effekt unterstützt, daher die Beeren im Shake.</p></div>
+<div class="kcard"><h3>Silizium und Schwefel</h3><p>Hafer liefert Silizium, Zwiebeln und Knoblauch Schwefelverbindungen. Beide werden für Bindegewebe diskutiert, die Studienlage ist aber deutlich dünner als bei Vitamin C und Protein. Nettes Extra, kein Muss.</p></div>
+</div>
+<h3 class="week">Weitere Nährstoffe, die bei veganer Ernährung zählen</h3>
+<div class="kgrid">
+<div class="kcard"><h3>Jod</h3><p>Fehlt in eurer Supplement-Liste und ist bei veganer Ernährung häufig knapp. Einfachste Lösung: konsequent Jodsalz (sal yodada) verwenden. Algen sind wegen stark schwankender Jodgehalte keine gute Alternative.</p></div>
+<div class="kcard"><h3>Eisen</h3><p>Besonders für sie relevant. Tofu, Linsen, Bohnen und Spinat liefern Eisen, Vitamin C in derselben Mahlzeit steigert die Aufnahme deutlich. Kaffee und schwarzen Tee lieber mit einer Stunde Abstand zu den Mahlzeiten trinken.</p></div>
+<div class="kcard"><h3>Calcium</h3><p>Angereicherter Sojadrink und Sojajoghurt (auf „calcio“ auf der Packung achten), Calcium-Tofu (Gerinnungsmittel „sulfato de calcio“) und Brokkoli. Mit 2–3 Portionen pro Tag seid ihr gut versorgt.</p></div>
+<div class="kcard"><h3>Salz</h3><p>Tofu-Würstchen, Sojasoße und Gemüsebrühe sind salzig. In Gerichten mit Würstchen erst am Ende und sparsam nachsalzen.</p></div>
+</div>
+</div></section>
+
+<section id="austausch"><div class="wrap">
+<h2>Einkaufen auf Gran Canaria</h2>
+<p class="intro">Spanische Begriffe für die Suche im Supermarkt und jeweils eine einfache Ausweichlösung.</p>
+<div class="tablewrap"><table class="swaps"><thead><tr><th>Zutat</th><th>Auf Spanisch</th><th>Einfache Alternative</th></tr></thead><tbody><tr><td>Tofu</td><td lang='es'>tofu firme</td><td>in 250-g-Packungen; Würstchen als Abwechslung</td></tr><tr><td>Vegane Würstchen</td><td lang='es'>salchichas de tofu (z. B. Salchiveg)</td><td>angebratener Tofu</td></tr><tr><td>Sojagranulat</td><td lang='es'>soja texturizada fina</td><td>zerbröselter Tofu</td></tr><tr><td>Tempeh</td><td lang='es'>tempeh</td><td>Tofu</td></tr><tr><td>TK-Erbsen</td><td lang='es'>guisantes congelados</td><td>ersetzen auch Edamame, falls ihr welche findet</td></tr><tr><td>Rote Linsen</td><td lang='es'>lentejas rojas / coral</td><td>braune Linsen (länger kochen)</td></tr><tr><td>Weiße Bohnen / Kidney / Kichererbsen</td><td lang='es'>alubias blancas / alubias rojas / garbanzos</td><td>untereinander austauschbar</td></tr><tr><td>Sojasahne</td><td lang='es'>nata de soja para cocinar</td><td>Sojajoghurt (erst am Ende einrühren)</td></tr><tr><td>Passierte Tomaten</td><td lang='es'>tomate triturado</td><td>gehackte Dosentomaten (tomate troceado), ggf. mit der Gabel zerdrücken</td></tr><tr><td>Pimentón</td><td lang='es'>pimentón dulce / pimentón de la Vera dulce (ahumado)</td><td>immer „dulce“, nie „picante“</td></tr><tr><td>Hefeflocken</td><td lang='es'>levadura nutricional</td><td>bereits gefunden</td></tr><tr><td>Cashews</td><td lang='es'>anacardos</td><td>Sesam (sésamo), Erdnüsse oder Kürbiskerne</td></tr><tr><td>Vollkorn-Wraps (optional)</td><td lang='es'>tortillas integrales</td><td>Reis-Bowl</td></tr><tr><td>Avocado (optional)</td><td lang='es'>aguacate</td><td>Cashews oder 1 TL Öl pro Portion</td></tr><tr><td>Sojajoghurt ungesüßt</td><td lang='es'>yogur de soja natural sin azúcar</td><td>auf „sin azúcares añadidos“ achten</td></tr><tr><td>Jodsalz</td><td lang='es'>sal yodada</td><td>wichtig, siehe Nährstoffe</td></tr></tbody></table></div>
+<h3 class="week">Meal-Prep sicher lagern</h3>
+<div class="kgrid">
+<div class="kcard"><h3>Schnell abkühlen</h3><p>Gekochtes innerhalb von 1–2 Stunden in den Kühlschrank, Reis flach auf einem Blech auskühlen lassen. Reis nur einmal aufwärmen.</p></div>
+<div class="kcard"><h3>3–4 Tage Kühlschrank</h3><p>Länger nicht. Die Mittwochs-Boxen der Sonntags-Mittagessen am besten einfrieren und Dienstagabend auftauen.</p></div>
+<div class="kcard"><h3>Einfach dämpfen</h3><p>Ohne Dämpfeinsatz: Gemüse mit 4–5 EL Wasser und einer Prise Salz in Pfanne oder Topf, abdecken (Deckel, Alufolie oder ein großer Teller), 4–5 Min. bei mittlerer bis hoher Hitze. Mit Sieb: 2 cm Wasser im Topf aufkochen, Gemüse im Sieb darüber, mit Teller oder Alufolie abdecken. Richtwerte: Brokkoli und Erbsen 4–5 Min., Karottenscheiben 5–6 Min., Tempeh 10 Min. Kurz und mit wenig Wasser gegart bleibt mehr Vitamin C erhalten als beim Kochen.</p></div>
+<div class="kcard"><h3>Getrennt lagern</h3><p>Saucen, Dressings und Kerne separat, dann bleibt alles knackig und Vitamin C bleibt besser erhalten.</p></div>
+</div>
+</div></section>
+
+<footer><div class="wrap"><p>Nährwerte sind gerundete Schätzungen auf Basis typischer Durchschnittswerte und dienen der Orientierung, nicht als medizinische Beratung. Bei Vorerkrankungen oder Unsicherheiten zu Supplementen bitte ärztlich abklären.</p></div></footer>
+<script>window.KB_DATA={"recipes": [{"id": "m1", "code": "M1", "name": "Ingwer-Tofu-Bowl mit Brokkoli, Karotten und Basmati", "week": 1, "slot": 0, "i": [["tofu", 130], ["reis", 50], ["brokkoli", 150], ["karotten", 60], ["erbsen", 40], ["sojasosse", 15], ["oel", 6], ["staerke", 3], ["ingwer", 4], ["knoblauch", 3], ["cashews", 8]], "m": [580, 31, 63, 21]}, {"id": "a1", "code": "A1", "name": "Linsen-Bolognese mit Vollkornpasta", "week": 1, "slot": 1, "i": [["pasta", 75], ["soja", 25], ["linsen", 20], ["passata", 150], ["tmark", 15], ["zwiebel", 50], ["karotten", 50], ["pilze", 50], ["oel", 5], ["hefe", 5], ["sojasosse", 8]], "m": [585, 35, 84, 8]}, {"id": "a2", "code": "A2", "name": "Ofen-Tofu mit Paprika-Kartoffeln und Knoblauch-Joghurt", "week": 1, "slot": 2, "i": [["tofu", 150], ["kartoffeln", 250], ["paprika", 150], ["zwiebel", 40], ["oel", 8], ["joghurt", 75], ["zitrone", 10], ["knoblauch", 3]], "m": [560, 30, 57, 22]}, {"id": "m2", "code": "M2", "name": "Weiße-Bohnen-Pastasalat mit Tofu, Paprika und Tomate", "week": 1, "slot": 3, "i": [["pasta", 60], ["wbohnen", 60], ["tofu", 110], ["paprika", 100], ["tomate", 100], ["gurke", 80], ["oel", 7], ["zitrone", 10], ["hefe", 5]], "m": [555, 31, 61, 18]}, {"id": "a3", "code": "A3", "name": "Mildes Tofu-Curry mit Süßkartoffel, Spinat und Sojasahne", "week": 1, "slot": 4, "i": [["tofu", 140], ["sahne", 40], ["susskartoffel", 100], ["spinat", 80], ["erbsen", 40], ["zwiebel", 40], ["reis", 45], ["passata", 50], ["ingwer", 4], ["knoblauch", 3]], "m": [580, 30, 68, 19]}, {"id": "a4", "code": "A4", "name": "Kanarische Ofenkartoffeln mit mildem Mojo rojo und Knusper-Tofu", "week": 1, "slot": 5, "i": [["kartoffeln", 260], ["tofu", 150], ["staerke", 8], ["oel", 10], ["paprika", 100], ["knoblauch", 3], ["tomate", 80], ["gurke", 80], ["erbsen", 40]], "m": [600, 29, 65, 23]}, {"id": "m3", "code": "M3", "name": "Paprika-Kartoffel-Gulasch mit Würstchen und Kidneybohnen", "week": 2, "slot": 0, "i": [["wurst", 70], ["kidney", 50], ["kartoffeln", 200], ["paprika", 150], ["zwiebel", 60], ["passata", 100], ["tmark", 15], ["oel", 4], ["joghurt", 40]], "m": [550, 31, 61, 18]}, {"id": "a5", "code": "A5", "name": "Cremige Pilz-Tomaten-Pasta mit Tofu und Spinat", "week": 2, "slot": 1, "i": [["pasta", 70], ["tofu", 120], ["pilze", 120], ["spinat", 60], ["sahne", 40], ["passata", 80], ["zwiebel", 30], ["hefe", 8], ["knoblauch", 3]], "m": [575, 37, 59, 19]}, {"id": "a6", "code": "A6", "name": "Milde Burrito-Bowl mit Soja-Hack, Kidneybohnen und Paprika", "week": 2, "slot": 2, "i": [["soja", 35], ["kidney", 50], ["reis", 60], ["paprika", 120], ["tomate", 80], ["zwiebel", 40], ["joghurt", 50], ["oel", 7], ["zitrone", 10]], "m": [540, 30, 78, 10]}, {"id": "m4", "code": "M4", "name": "Erdnuss-Nudelsalat mit Tofu, Karotte, Paprika und Gurke", "week": 2, "slot": 3, "i": [["pasta", 65], ["tofu", 110], ["erbsen", 40], ["karotten", 60], ["paprika", 80], ["gurke", 60], ["erdnussmus", 12], ["sojasosse", 12], ["zitrone", 10], ["ingwer", 4]], "m": [545, 31, 62, 17]}, {"id": "a7", "code": "A7", "name": "Tempeh-Gyros mit Reis, Tomaten-Gurken-Salat und Joghurt", "week": 2, "slot": 4, "i": [["tempeh", 100], ["reis", 50], ["paprika", 100], ["zwiebel", 50], ["tomate", 80], ["gurke", 60], ["joghurt", 60], ["oel", 6], ["knoblauch", 3]], "m": [525, 28, 62, 19]}, {"id": "a8", "code": "A8", "name": "Tofu-Patties mit Kartoffelspalten und Karotten-Gurken-Salat", "week": 2, "slot": 5, "i": [["tofu", 130], ["hafer", 15], ["hefe", 6], ["zwiebel", 20], ["kartoffeln", 250], ["oel", 8], ["karotten", 60], ["gurke", 60], ["joghurt", 40]], "m": [565, 30, 62, 21]}, {"id": "m5", "code": "M5", "name": "Rotes Linsen-Dal mit Tofu, Spinat und Basmati", "week": 3, "slot": 0, "i": [["linsen", 35], ["tofu", 100], ["spinat", 80], ["passata", 80], ["zwiebel", 40], ["karotten", 50], ["reis", 50], ["sahne", 20], ["ingwer", 4], ["knoblauch", 3]], "m": [540, 31, 71, 13]}, {"id": "a9", "code": "A9", "name": "Würstchen-Pasta in Tomaten-Paprika-Sauce", "week": 3, "slot": 1, "i": [["pasta", 75], ["wurst", 50], ["paprika", 120], ["zucchini", 80], ["passata", 120], ["zwiebel", 40], ["sahne", 20], ["hefe", 5]], "m": [540, 30, 68, 15]}, {"id": "a10", "code": "A10", "name": "Gefüllte Paprika mit Soja-Reis-Füllung in Tomatensauce", "week": 3, "slot": 2, "i": [["paprika", 200], ["soja", 30], ["tofu", 50], ["reis", 50], ["zwiebel", 40], ["passata", 120], ["hefe", 8], ["oel", 5], ["joghurt", 40]], "m": [540, 35, 70, 12]}, {"id": "m6", "code": "M6", "name": "Bratkartoffeln mit Zwiebeln, Knusper-Tofu und Brokkoli", "week": 3, "slot": 3, "i": [["kartoffeln", 250], ["zwiebel", 70], ["tofu", 140], ["brokkoli", 120], ["oel", 8], ["staerke", 5], ["hefe", 5], ["joghurt", 50]], "m": [570, 32, 60, 21]}, {"id": "a11", "code": "A11", "name": "Brokkoli-Cashew-Tofu mit Ingwer-Soja-Sauce und Reis", "week": 3, "slot": 4, "i": [["tofu", 140], ["brokkoli", 150], ["paprika", 80], ["cashews", 12], ["reis", 50], ["sojasosse", 12], ["ingwer", 4], ["oel", 6], ["staerke", 3]], "m": [580, 30, 59, 24]}, {"id": "a12", "code": "A12", "name": "Wraps oder Bowl mit Ofen-Tofu, Paprika und Joghurt-Dip", "week": 3, "slot": 5, "i": [["wrap", 60], ["tofu", 160], ["paprika", 100], ["tomate", 80], ["gurke", 50], ["joghurt", 70], ["oel", 7]], "m": [540, 31, 43, 26]}, {"id": "m7", "code": "M7", "name": "Weiße-Bohnen-Eintopf mit Würstchen, Karotten und Kartoffeln", "week": 4, "slot": 0, "i": [["wbohnen", 70], ["wurst", 70], ["kartoffeln", 200], ["karotten", 60], ["paprika", 80], ["zwiebel", 50], ["passata", 120], ["spinat", 50], ["oel", 4]], "m": [550, 31, 63, 17]}, {"id": "a13", "code": "A13", "name": "Ofen-Pasta mit Brokkoli und cremiger Hefeflocken-Sauce", "week": 4, "slot": 1, "i": [["pasta", 70], ["tofu", 120], ["brokkoli", 150], ["sahne", 30], ["sojadrink", 60], ["hefe", 10], ["staerke", 3], ["zwiebel", 20]], "m": [580, 37, 62, 19]}, {"id": "a14", "code": "A14", "name": "Süßkartoffel-Tempeh-Blech mit Brokkoli und Erdnuss-Dip", "week": 4, "slot": 2, "i": [["tempeh", 100], ["susskartoffel", 180], ["brokkoli", 150], ["zwiebel", 30], ["oel", 6], ["erdnussmus", 10], ["sojasosse", 8], ["zitrone", 5]], "m": [530, 30, 52, 23]}, {"id": "m8", "code": "M8", "name": "Kalte Sushi-Bowl mit Ingwer-Tofu, Gurke, Karotte und Erbsen", "week": 4, "slot": 3, "i": [["reis", 60], ["tofu", 140], ["gurke", 80], ["karotten", 60], ["erbsen", 40], ["sojasosse", 15], ["ingwer", 4], ["cashews", 8], ["oel", 4]], "m": [550, 29, 63, 20]}, {"id": "a15", "code": "A15", "name": "Gebratener Gemüsereis mit Soja-Hack, Paprika und Erbsen", "week": 4, "slot": 4, "i": [["soja", 30], ["reis", 60], ["paprika", 120], ["erbsen", 50], ["karotten", 50], ["zwiebel", 40], ["oel", 7], ["sojasosse", 10], ["hefe", 5], ["joghurt", 60], ["ingwer", 4]], "m": [545, 30, 77, 10]}, {"id": "a16", "code": "A16", "name": "Würstchen-Pfanne mit Bratkartoffeln, Paprika und Gurken-Joghurt", "week": 4, "slot": 5, "i": [["wurst", 80], ["kartoffeln", 250], ["paprika", 100], ["zwiebel", 50], ["oel", 8], ["gurke", 80], ["joghurt", 50]], "m": [555, 29, 55, 23]}], "ing": {"tofu": ["fester Tofu", 130, 13, 2, 8, [250, "Packung", "Packungen"], "Protein"], "tempeh": ["Tempeh", 190, 19, 9, 11, null, "Protein"], "soja": ["Sojagranulat, fein", 340, 50, 30, 1, null, "Protein"], "wurst": ["vegane Tofu-Würstchen (Salchiveg)", 261, 25, 4, 17, [200, "Packung", "Packungen"], "Protein"], "linsen": ["rote Linsen, trocken", 340, 25, 48, 1.5, null, "Protein"], "kichererbsen": ["Kichererbsen, abgetropft", 130, 7, 17, 2.5, [250, "Glas/Dose", "Gläser/Dosen"], "Protein"], "wbohnen": ["weiße Bohnen, abgetropft", 100, 7, 14, 0.5, [250, "Glas/Dose", "Gläser/Dosen"], "Protein"], "kidney": ["Kidneybohnen, abgetropft", 110, 7.5, 15, 0.5, [250, "Glas/Dose", "Gläser/Dosen"], "Protein"], "erbsen": ["TK-Erbsen", 80, 5.4, 10, 0.4, null, "Gemüse"], "reis": ["Basmatireis, trocken", 350, 7.5, 77, 0.7, null, "Kohlenhydrate"], "pasta": ["Vollkornpasta, trocken", 350, 13, 65, 2.5, null, "Kohlenhydrate"], "kartoffeln": ["Kartoffeln", 75, 2, 16, 0.1, null, "Kohlenhydrate"], "susskartoffel": ["Süßkartoffeln", 85, 1.6, 18, 0.1, null, "Kohlenhydrate"], "wrap": ["Vollkorn-Wraps (optional)", 300, 8.5, 50, 7, [60, "Wrap", "Wraps"], "Kohlenhydrate"], "brot": ["Vollkornbrot", 220, 8, 40, 2.5, [45, "Scheibe", "Scheiben"], "Kohlenhydrate"], "hafer": ["Haferflocken", 370, 13, 59, 7, null, "Kohlenhydrate"], "sahne": ["Sojasahne zum Kochen", 170, 2.5, 2, 17, [200, "Packung", "Packungen"], "Kühlregal"], "joghurt": ["Sojajoghurt natur, ungesüßt", 50, 4, 2, 2.3, null, "Kühlregal"], "sojadrink": ["Sojadrink, ungesüßt", 35, 3.3, 0.5, 1.8, null, "Kühlregal"], "paprika": ["rote Paprika", 30, 1, 5, 0.3, [150, "Stück", "Stück"], "Gemüse"], "brokkoli": ["Brokkoli", 35, 3, 4, 0.4, [400, "Kopf", "Köpfe"], "Gemüse"], "karotten": ["Karotten", 40, 1, 8, 0.2, [80, "Stück", "Stück"], "Gemüse"], "zwiebel": ["Zwiebeln", 40, 1, 8, 0.1, [100, "Stück", "Stück"], "Gemüse"], "tomate": ["Tomaten", 20, 1, 3, 0.2, [120, "Stück", "Stück"], "Gemüse"], "spinat": ["Spinat, TK oder frisch", 23, 2.9, 1, 0.4, null, "Gemüse"], "zucchini": ["Zucchini", 20, 1.5, 2, 0.3, [250, "Stück", "Stück"], "Gemüse"], "pilze": ["Champignons", 22, 3, 0.5, 0.3, null, "Gemüse"], "gurke": ["Salatgurke", 12, 0.6, 2, 0.1, [300, "Stück", "Stück"], "Gemüse"], "zitrone": ["Zitronensaft", 25, 0.4, 7, 0.2, [40, "Zitrone", "Zitronen"], "Gemüse"], "knoblauch": ["Knoblauch", 140, 6, 30, 0.5, [4, "Zehe", "Zehen"], "Gemüse"], "ingwer": ["Ingwer, frisch", 80, 1.8, 18, 0.8, null, "Gemüse"], "erdnussmus": ["Erdnussmus (100 % Erdnuss)", 600, 25, 12, 50, null, "Vorrat"], "cashews": ["Cashews", 580, 18, 27, 45, null, "Vorrat"], "hefe": ["Hefeflocken", 350, 50, 30, 5, null, "Vorrat"], "oel": ["Pflanzenöl", 900, 0, 0, 100, null, "Vorrat"], "passata": ["passierte Tomaten", 25, 1.3, 4, 0.2, null, "Vorrat"], "tmark": ["Tomatenmark", 80, 4, 13, 0.5, null, "Vorrat"], "sojasosse": ["Sojasoße", 60, 8, 6, 0, null, "Vorrat"], "staerke": ["Speisestärke", 350, 0, 87, 0, null, "Vorrat"]}, "basic": {"tofu": 875, "zwiebel": 200, "spinat": 420, "tomate": 840, "paprika": 525, "hefe": 105, "joghurt": 300, "brot": 315, "hafer": 710, "erdnussmus": 235, "sojadrink": 4370, "oel": 100}, "extra": {"Protein": ["Veganes Proteinpulver ca. 250 g (beide)"], "Vorrat": ["Leinsamen geschrotet ca. 100 g", "Kürbiskerne ca. 210 g (sein Topping)", "Gewürze: Kurkuma, Kreuzkümmel, Pimentón dulce und ahumado dulce, Zimt, Oregano, Thymian, Pfeffer, Jodsalz, Gemüsebrühe, Apfelessig"], "Kühlregal": ["Haferdrink ca. 1,2 l (sein Aufbau-Shake)"], "Obst": ["TK-Beeren und Obst fürs Müsli ca. 1,2 kg", "Bananen 4"]}};</script>
+<script>(function(){
+"use strict";
+const D = window.KB_DATA;
+const TEILE=[10,5,5,7.5,5,2.5];
+const SLOTLBL=["Mittag So–Mi","Abend So–Mo","Abend Di–Mi","Mittag Do–Sa","Abend Do–Fr","Abend Sa (frisch)"];
+const DOCS={weights:"tracker/weights",cooked:"tracker/cooked",shop:"tracker/shop",flex:"tracker/flex"};
+const DEF=()=>({weights:{sie:{start:{d:"2026-11-06",kg:62}},er:{start:{d:"2026-11-06",kg:77}}},cooked:{keys:{}},shop:{keys:{}},flex:{picks:[],assign:[]}});
+let state=DEF(), db=null, readOnly=false;
+const R={}; D.recipes.forEach(r=>R[r.id]=r);
+const $=(s,el=document)=>el.querySelector(s), $$=(s,el=document)=>Array.from(el.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const clone=o=>JSON.parse(JSON.stringify(o));
+function merge(t,s){for(const k in s){const v=s[k];if(v&&typeof v==="object"&&!Array.isArray(v)){if(!t[k]||typeof t[k]!=="object")t[k]={};merge(t[k],v);}else t[k]=v;}return t;}
+
+/* ---------- Speicher ---------- */
+function loadLocal(){for(const k in DOCS){try{const v=localStorage.getItem("kb-"+k);if(v)state[k]=merge(DEF()[k],JSON.parse(v));}catch(e){}}}
+function saveLocal(k){try{localStorage.setItem("kb-"+k,JSON.stringify(state[k]));}catch(e){}}
+const chains={};
+function persist(k,obj){
+  if(!db){saveLocal(k);if(gl){gl.pending.push({k,obj:clone(obj)});glSchedule();}return;}
+  if(readOnly)return;
+  const ref=db.doc(DOCS[k]);
+  chains[k]=(chains[k]||Promise.resolve()).then(async()=>{
+    try{await ref.update(obj);}
+    catch(e){
+      if(e&&e.code==="invalid_argument"){try{await ref.set(clone(state[k]));}catch(e2){setReadOnly();}}
+      else if(e&&e.code==="unavailable"){await new Promise(r=>setTimeout(r,400+Math.random()*600));try{await ref.update(obj);}catch(e3){}}
     }
+  });
+}
+function patch(k,obj){merge(state[k],obj);persist(k,obj);renderAll();}
+function setStatus(t,cls){const el=$("#syncstatus");if(el){el.textContent=t;el.className="sync "+(cls||"");}}
+function setReadOnly(){readOnly=true;setStatus("Nur Ansicht: Du kannst hier nichts speichern. Bitte die Person, die das Kochbuch geteilt hat, dir Bearbeitungsrechte zu geben.","warn");}
 
-    function connectGitLab() {
-      const cfg = getSyncConfig();
-      localStorage.setItem('gl_url', cfg.url);
-      localStorage.setItem('gl_path', document.getElementById('cfg-path').value.trim());
-      localStorage.setItem('gl_branch', cfg.branch);
-      localStorage.setItem('gl_token', cfg.token);
-
-      syncFromGitLab();
+/* ---------- GitLab-Synchronisierung ---------- */
+let gl=null;
+const GLKEY="kb-gitlab";
+function glCfg(){try{return JSON.parse(localStorage.getItem(GLKEY)||"null");}catch(e){return null;}}
+function glBase(c){return c.host.replace(/\/+$/,"")+"/api/v4/projects/"+encodeURIComponent(c.project);}
+function glFileUrl(c){return glBase(c)+"/repository/files/"+encodeURIComponent(c.path||"data.json");}
+function glHeaders(c,json){const h={"PRIVATE-TOKEN":c.token};if(json)h["Content-Type"]="application/json";return h;}
+function b64utf8(b64){const bin=atob(b64.replace(/\s/g,""));const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes);}
+function normalize(data){const out=DEF();for(const k in DOCS){if(data&&data[k]&&typeof data[k]==="object")out[k]=merge(DEF()[k],clone(data[k]));}return out;}
+function saveAllLocal(){for(const k in DOCS)saveLocal(k);}
+function applyOps(base,ops){ops.forEach(op=>{if(op.replace){for(const k in DOCS)base[k]=merge(DEF()[k],clone(op.replace[k]||{}));}else merge(base[op.k],clone(op.obj));});return base;}
+async function glFetch(c){
+  const r=await fetch(glFileUrl(c)+"?ref="+encodeURIComponent(c.branch||"main"),{headers:glHeaders(c)});
+  if(r.status===404)return {data:null,commit:null};
+  if(r.status===401)throw new Error("token");
+  if(!r.ok)throw new Error("http "+r.status);
+  const j=await r.json();
+  let data=null;try{data=JSON.parse(b64utf8(j.content||""));}catch(e){data=null;}
+  return {data,commit:j.last_commit_id||null};
+}
+function glSchedule(){if(!gl)return;clearTimeout(gl.t);gl.t=setTimeout(glPush,900);setStatus("Änderungen werden gespeichert …");}
+async function glPush(){
+  if(!gl)return; if(gl.busy){gl.again=true;return;} if(!gl.pending.length)return;
+  gl.busy=true;const c=gl.cfg;
+  try{
+    let ok=false;
+    for(let attempt=0;attempt<4&&!ok;attempt++){
+      const {data,commit}=await glFetch(c);
+      const ops=gl.pending.slice();
+      const merged=applyOps(normalize(data),ops);
+      const body={branch:c.branch||"main",content:JSON.stringify(merged),commit_message:"Tracker-Update [skip ci]"};
+      if(commit)body.last_commit_id=commit;
+      const r=await fetch(glFileUrl(c),{method:data===null&&!commit?"POST":"PUT",headers:glHeaders(c,true),body:JSON.stringify(body)});
+      if(r.ok){gl.pending.splice(0,ops.length);state=applyOps(merged,gl.pending);saveAllLocal();ok=true;}
+      else if(r.status===401){throw new Error("token");}
+      else if(r.status===403){throw new Error("rechte");}
+      else if(r.status===400||r.status===409){await new Promise(res=>setTimeout(res,300+Math.random()*700));}
+      else throw new Error("http "+r.status);
     }
+    if(ok){gl.lastSync=new Date();setStatus("Gespeichert in GitLab um "+gl.lastSync.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"})+". Synchronisiert sich beim Öffnen und jede Minute.","ok");renderAll();}
+    else setStatus("Speichern hat gerade nicht geklappt, ich versuche es gleich noch einmal.","warn");
+  }catch(e){glError(e);}
+  finally{gl.busy=false;if(gl&&(gl.again||gl.pending.length)){gl.again=false;if(gl.pending.length)setTimeout(glPush,gl.lastError?15000:1500);}}
+}
+function glError(e){
+  const m=String(e&&e.message||e);gl.lastError=m;
+  if(m==="token")setStatus("GitLab lehnt den Zugangsschlüssel ab. Bitte unten in der Einrichtung einen gültigen Token eintragen. Deine Einträge sind lokal gesichert.","warn");
+  else if(m==="rechte")setStatus("Keine Schreibrechte im GitLab-Projekt (Rolle „Maintainer“ nötig). Deine Einträge sind lokal gesichert.","warn");
+  else setStatus("GitLab ist gerade nicht erreichbar. Deine Einträge sind lokal gesichert und werden später übertragen.","warn");
+}
+async function glPull(){
+  if(!gl||gl.busy||gl.pending.length)return;
+  try{const {data}=await glFetch(gl.cfg);gl.lastError=null;
+    if(data){state=normalize(data);saveAllLocal();renderAll();}
+    gl.lastSync=new Date();setStatus("Mit GitLab synchronisiert um "+gl.lastSync.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"})+".","ok");
+  }catch(e){glError(e);}
+}
+async function glTest(c){
+  const r=await fetch(glBase(c),{headers:glHeaders(c)});
+  if(r.status===401)return "Der Zugangsschlüssel (Token) ist ungültig oder abgelaufen.";
+  if(r.status===404)return "Projekt nicht gefunden. Prüfe den Projektpfad und ob dein Account Mitglied des Projekts ist.";
+  if(!r.ok)return "GitLab antwortet mit Fehler "+r.status+".";
+  return null;
+}
+async function glStart(c,firstConnect){
+  gl={cfg:c,pending:[],busy:false,again:false,t:null,lastSync:null,lastError:null};
+  setStatus("Verbinde mit GitLab …");
+  try{
+    const {data}=await glFetch(c);
+    if(firstConnect){if(data)state=mergeKeep(normalize(data),state);saveAllLocal();renderAll();gl.pending=[{replace:clone(state)}];await glPush();}
+    else if(data){state=normalize(data);saveAllLocal();renderAll();setStatus("Mit GitLab synchronisiert.","ok");}
+    else{gl.pending.push({replace:clone(state)});await glPush();}
+  }catch(e){glError(e);}
+  if(!gl.timer){gl.timer=setInterval(()=>{if(document.visibilityState==="visible")glPull();},60000);}
+}
+function mergeKeep(remote,local){const out=clone(remote);for(const k in DOCS)merge(out[k],clone(local[k]));return out;}
+document.addEventListener("visibilitychange",()=>{if(!gl)return;if(document.visibilityState==="visible")glPull();else if(gl.pending.length)glPush();});
+function renderSyncBox(){
+  const c=glCfg();const box=$("#glform");if(!box)return;
+  const f=box.elements;
+  if(c){f.host.value=c.host;f.project.value=c.project;f.branch.value=c.branch||"main";f.token.value="";f.token.placeholder="gespeichert (zum Ändern neu eingeben)";}
+  $("#gldisconnect").hidden=!c;$("#glstate").textContent=c?"Verbunden mit "+c.project:"Noch nicht verbunden";
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify({app:"kochbuch",version:1,exported:new Date().toISOString(),data:state},null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kochbuch-daten-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+}
+function importData(file){
+  const rd=new FileReader();
+  rd.onload=()=>{let j;try{j=JSON.parse(rd.result);}catch(e){alert("Die Datei konnte nicht gelesen werden.");return;}
+    const data=j&&j.data?j.data:j;if(!data||typeof data!=="object"||!data.weights){alert("Das ist keine Sicherung dieses Kochbuchs.");return;}
+    if(!confirm("Sicherung einlesen? Die aktuellen Daten werden durch die Sicherung ersetzt."))return;
+    state=normalize(data);saveAllLocal();renderAll();
+    if(gl){gl.pending.push({replace:clone(state)});glSchedule();}
+    setStatus("Sicherung eingelesen.","ok");};
+  rd.readAsText(file);
+}
+function bindSyncBox(){
+  const form=$("#glform");if(!form)return;
+  form.addEventListener("submit",async ev=>{ev.preventDefault();const f=form.elements;const old=glCfg();
+    const c={host:(f.host.value||"https://gitlab.com").trim(),project:f.project.value.trim().replace(/^\/+|\/+$/g,""),branch:(f.branch.value||"main").trim(),path:"data.json",token:f.token.value.trim()||(old&&old.token)||""};
+    const msg=$("#glmsg");
+    if(!c.project||!c.token){msg.textContent="Bitte Projektpfad und Token eintragen.";return;}
+    msg.textContent="Prüfe Verbindung …";
+    let err=null;try{err=await glTest(c);}catch(e){err="GitLab ist nicht erreichbar. Prüfe die Adresse und deine Internetverbindung.";}
+    if(err){msg.textContent=err;return;}
+    try{localStorage.setItem(GLKEY,JSON.stringify(c));}catch(e){}
+    msg.textContent="Verbunden. Eure Daten werden jetzt in GitLab gespeichert.";renderSyncBox();
+    if(gl&&gl.timer)clearInterval(gl.timer);await glStart(c,true);
+  });
+  $("#gldisconnect").addEventListener("click",()=>{if(!confirm("Verbindung zu GitLab auf diesem Gerät trennen? Der Token wird von diesem Gerät gelöscht, eure Daten in GitLab bleiben erhalten."))return;
+    try{localStorage.removeItem(GLKEY);}catch(e){}if(gl&&gl.timer)clearInterval(gl.timer);gl=null;renderSyncBox();$("#glmsg").textContent="Getrennt.";setStatus("Gespeichert nur in diesem Browser.","warn");});
+  $("#btnexport").addEventListener("click",exportData);
+  $("#fileimport").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(f)importData(f);e.target.value="";});
+  renderSyncBox();
+}
 
-    function setStatus(msg, type) {
-      const el = document.getElementById('sync-status');
-      const badge = document.getElementById('sync-badge');
-      el.className = 'status ' + type;
-      el.innerText = msg;
-      if (type === 'ok') {
-        badge.innerText = '● Verbunden';
-        badge.className = 'status ok';
-      } else if (type === 'err') {
-        badge.innerText = '● Fehler';
-        badge.className = 'status err';
-      } else {
-        badge.innerText = '● Synchronisiere...';
-        badge.className = 'status sync';
-      }
-    }
+async function initDb(){
+  const glc=glCfg();
+  if(glc&&glc.token){glStart(glc,false);return;}
+  const c=window.claude;
+  if(!c||typeof c.use!=="function"){setStatus("Gespeichert nur in diesem Browser. Für gemeinsames Speichern unten die GitLab-Synchronisierung einrichten.","warn");return;}
+  let d=null; try{d=await c.use("db");}catch(e){d=null;}
+  if(!d){setStatus("Gespeichert nur in diesem Browser. Für gemeinsames Speichern bitte anmelden.","warn");return;}
+  db=d; state=DEF(); renderAll();
+  setStatus("Verbinde …");
+  let pending=Object.keys(DOCS).length;
+  const timer=setTimeout(()=>setStatus("Daten noch nicht erreichbar, Anzeige ist evtl. nicht aktuell.","warn"),10000);
+  for(const k in DOCS){
+    let first=true;
+    db.doc(DOCS[k]).onSnapshot(snap=>{
+      if(snap.exists) state[k]=merge(DEF()[k],clone(snap.data()));
+      if(first&&!snap.metadata.fromCache){first=false;if(--pending===0){clearTimeout(timer);setStatus("Gespeichert für euch beide, synchronisiert sich automatisch.","ok");}}
+      renderAll();
+    },err=>{clearTimeout(timer);if(err&&err.code==="revoked")setStatus("Speichern ist gerade nicht verfügbar.","warn");else setStatus("Daten konnten nicht geladen werden.","warn");});
+  }
+}
 
-    // --- FETCH & MERGE LOGIC (Möglichkeit 1) ---
+/* ---------- Mengen ---------- */
+function de(x,d){return (d?(+x.toFixed(d)).toString():String(Math.round(x))).replace(".",",");}
+function rnd(g){if(g>=1000)return de(Math.round(g/50)*50/1000,2)+" kg";if(g>=200)return Math.round(g/25)*25+" g";if(g>=40)return Math.round(g/5)*5+" g";return Math.round(g)+" g";}
+function half(x){const v=Math.max(.5,Math.round(x*2)/2);if(v===.5)return"½";return Math.floor(v)+(v%1?"½":"");}
+const ML={sahne:1,sojadrink:1,sojasosse:1};
+function amount(k,g){
+  const n=D.ing[k],unit=n[5];
+  if(k==="oel")return "ca. "+Math.round(g/50)*50+" ml";
+  if(k==="staerke")return half(g/8)+" EL";
+  if(k==="sojasosse")return g<120?half(g/15)+" EL":Math.round(g/10)*10+" ml";
+  if(k==="knoblauch")return Math.round(g/4)+" Zehen";
+  if(k==="zitrone")return String(Math.max(1,Math.round(g/40+.49)));
+  if(k==="wrap")return Math.round(g/60)+" Wraps";
+  if(k==="brot")return Math.round(g/45)+" Scheiben";
+  let b=rnd(g); if(ML[k])b=b.replace(" g"," ml").replace(" kg"," l");
+  if(unit){const c=g/unit[0];
+    if(["tofu","wurst","sahne","kichererbsen","wbohnen","kidney"].includes(k)){const cc=half(c);return b+" (≈ "+cc+" "+(cc==="½"||cc==="1"?unit[1]:unit[2])+")";}
+    const cc=Math.max(1,Math.round(c));return b+" (≈ "+cc+" "+(cc===1?unit[1]:unit[2])+")";}
+  return b;
+}
+const CATS=["Protein","Kohlenhydrate","Gemüse","Obst","Kühlregal","Vorrat"];
+function buildList(entries){
+  const tot=Object.assign({},D.basic);
+  entries.forEach(([rid,t])=>{const r=R[rid];if(!r)return;r.i.forEach(([k,g])=>{tot[k]=(tot[k]||0)+g*t;});});
+  const groups={};CATS.forEach(c=>groups[c]=[]);
+  for(const k in tot){const n=D.ing[k];const cat=k==="zitrone"?"Obst":n[6];
+    const label=k==="zitrone"?"Zitronen: "+Math.max(2,Math.round(tot[k]/40+.49)):n[0]+": "+amount(k,tot[k]);
+    groups[cat].push({key:k,label});}
+  Object.entries(D.extra).forEach(([cat,l])=>l.forEach((x,i)=>groups[cat].push({key:"x"+cat+i,label:x})));
+  CATS.forEach(c=>groups[c].sort((a,b)=>a.label.toLowerCase().localeCompare(b.label.toLowerCase())));
+  return groups;
+}
+function weekEntries(w){return D.recipes.filter(r=>r.week===w).map(r=>[r.id,TEILE[r.slot]]);}
+function flexEntries(){return (state.flex.assign||[]).map((id,s)=>id?[id,TEILE[s]]:null).filter(Boolean);}
 
-    async function syncFromGitLab() {
-      const cfg = getSyncConfig();
-      if (!cfg.token || !cfg.path) return;
+/* ---------- Einkauf ---------- */
+let shopTab="1";
+function renderShop(){
+  const host=$("#shoplists");if(!host)return;
+  const tabs=["1","2","3","4","flex"];
+  const entries=shopTab==="flex"?flexEntries():weekEntries(+shopTab);
+  let html='<div class="tabs" role="tablist">'+tabs.map(t=>`<button type="button" role="tab" class="tab${t===shopTab?" on":""}" data-tab="${t}" aria-selected="${t===shopTab}">${t==="flex"?"Flexi-Woche":"Woche "+t}</button>`).join("")+"</div>";
+  if(shopTab==="flex"&&!entries.length){host.innerHTML=html+'<p class="empty">Stellt zuerst oben eure <a href="#flexi">Flexi-Woche</a> zusammen, dann erscheint hier die passende Einkaufsliste.</p>';bindTabs();return;}
+  const g=buildList(entries);let total=0,done=0;
+  let body="";
+  CATS.forEach(c=>{if(!g[c].length)return;body+=`<div class="shopgroup"><h4>${c}</h4><ul class="checks">`;
+    g[c].forEach(it=>{const key=shopTab+"|"+it.key;const on=!!state.shop.keys[key];total++;if(on)done++;
+      body+=`<li><label class="${on?"done":""}"><input type="checkbox" data-shop="${esc(key)}" ${on?"checked":""}><span>${esc(it.label)}</span></label></li>`;});
+    body+="</ul></div>";});
+  const pct=total?Math.round(done/total*100):0;
+  html+=`<div class="shopbar"><div class="bar"><span style="width:${pct}%"></span></div><span>${done} von ${total} im Korb${pct===100?" 🎉":""}</span><button type="button" class="ghost" data-shopreset="${shopTab}">Liste zurücksetzen</button></div><div class="shop">${body}</div>`;
+  host.innerHTML=html;bindTabs();
+}
+function bindTabs(){$$("#shoplists .tab").forEach(b=>b.onclick=()=>{shopTab=b.dataset.tab;renderShop();});}
+document.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.dataset.shop){patch("shop",{keys:{[t.dataset.shop]:t.checked}});}
+  if(t.dataset.flexcook){patch("cooked",{keys:{[t.dataset.flexcook]:t.checked}});}
+  if(t.dataset.assign){const a=(state.flex.assign||[]).slice();while(a.length<6)a.push(null);a[+t.dataset.assign]=t.value||null;patch("flex",{assign:a});}
+});
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.shopreset){const p=b.dataset.shopreset+"|";const o={};Object.keys(state.shop.keys).forEach(k=>{if(k.startsWith(p)&&state.shop.keys[k])o[k]=false;});if(Object.keys(o).length)patch("shop",{keys:o});}
+  if(b.dataset.cook){const k="c|"+b.dataset.cook;patch("cooked",{keys:{[k]:!state.cooked.keys[k]}});}
+  if(b.dataset.pick){togglePick(b.dataset.pick);}
+  if(b.dataset.flexreset!==undefined){if(!confirm("Neue Flexi-Woche starten? Auswahl, Häkchen und Einkaufsliste der Flexi-Woche werden geleert."))return;
+    const ck={},sk={};Object.keys(state.cooked.keys).forEach(k=>{if(k.startsWith("f|")&&state.cooked.keys[k])ck[k]=false;});Object.keys(state.shop.keys).forEach(k=>{if(k.startsWith("flex|")&&state.shop.keys[k])sk[k]=false;});
+    if(Object.keys(ck).length)patch("cooked",{keys:ck});if(Object.keys(sk).length)patch("shop",{keys:sk});patch("flex",{picks:[],assign:[]});}
+  if(b.dataset.delw){const [p,id]=b.dataset.delw.split(":");patch("weights",{[p]:{[id]:null}});}
+});
 
-      setStatus('Lade Daten von GitLab...', 'sync');
-      try {
-        const res = await fetch(`${cfg.url}/api/v4/projects/${cfg.path}/repository/files/data.json?ref=${cfg.branch}`, {
-          headers: { 'PRIVATE-TOKEN': cfg.token }
-        });
+/* ---------- Gekocht ---------- */
+function renderCooked(){
+  $$("[data-cook]").forEach(b=>{const on=!!state.cooked.keys["c|"+b.dataset.cook];b.classList.toggle("on",on);b.setAttribute("aria-pressed",on);b.textContent=on?"✓ Gekocht":"Als gekocht abhaken";});
+  $$("[data-rid]").forEach(a=>a.classList.toggle("cooked",!!state.cooked.keys["c|"+a.dataset.rid]));
+  $$("[data-wkprog]").forEach(s=>{const w=+s.dataset.wkprog;const ids=D.recipes.filter(r=>r.week===w).map(r=>r.id);const n=ids.filter(id=>state.cooked.keys["c|"+id]).length;s.textContent=n+" von 6 gekocht"+(n===6?" 🏆":"");s.classList.toggle("full",n===6);});
+}
 
-        if (res.ok) {
-          const fileData = await res.json();
-          const remoteContent = JSON.parse(decodeURIComponent(escape(atob(fileData.content))));
-          appData = mergeData(appData, remoteContent);
-          renderUI();
-          setStatus('Mit GitLab synchronisiert', 'ok');
-        } else if (res.status === 404) {
-          // File doesn't exist yet, create initial
-          await saveToGitLab();
-        } else {
-          setStatus('Fehler beim Laden. Bitte Token/Pfad prüfen.', 'err');
-        }
-      } catch (err) {
-        console.error(err);
-        setStatus('Netzwerkfehler beim Laden von GitLab.', 'err');
-      }
-    }
+/* ---------- Flexi ---------- */
+function autoAssign(picks){
+  const a=[null,null,null,null,null,null];
+  const lunchSlots=[0,3],dinnerSlots=[1,2,4,5];
+  const pool=picks.slice();
+  const take=(pred)=>{const i=pool.findIndex(pred);return i<0?null:pool.splice(i,1)[0];};
+  lunchSlots.forEach(s=>{a[s]=take(id=>[0,3].includes(R[id].slot));});
+  a[5]=take(id=>R[id].slot===5);
+  [1,2,4,5].forEach(s=>{if(!a[s])a[s]=take(id=>R[id].slot!==5)||take(()=>true);});
+  lunchSlots.forEach(s=>{if(!a[s])a[s]=take(()=>true);});
+  return a;
+}
+function togglePick(id){
+  let p=(state.flex.picks||[]).slice();
+  if(p.includes(id))p=p.filter(x=>x!==id);else{if(p.length>=6){flash("Maximal 6 Gerichte pro Woche. Entfernt zuerst eins.");return;}p.push(id);}
+  patch("flex",{picks:p,assign:autoAssign(p)});
+}
+function flash(t){const el=$("#flexmsg");if(el){el.textContent=t;setTimeout(()=>{if(el.textContent===t)el.textContent="";},3500);}}
+function renderFlex(){
+  const grid=$("#flexgrid");if(!grid)return;
+  const picks=state.flex.picks||[];
+  grid.innerHTML=D.recipes.map(r=>{const on=picks.includes(r.id);const tag=r.slot===5?"Samstag frisch":([0,3].includes(r.slot)?"gut als Mittagsbox":"Abendessen");
+    return `<button type="button" class="dish${on?" on":""}" data-pick="${r.id}" aria-pressed="${on}"><span class="dcode">${r.code}</span><span class="dname">${esc(r.name)}</span><span class="dmeta">${tag}, ${r.m[0]} kcal, ${r.m[1]} g Protein</span>${on?'<span class="dtick">✓</span>':""}</button>`;}).join("");
+  $("#flexcount").textContent=picks.length+" von 6 ausgewählt";
+  const plan=$("#flexplan");
+  if(!picks.length){plan.innerHTML='<p class="empty">Wählt bis zu 6 Gerichte aus, auf die ihr diese Woche Lust habt. Daraus entsteht hier euer Plan.</p>';return;}
+  const a=(state.flex.assign&&state.flex.assign.length===6)?state.flex.assign:autoAssign(picks);
+  const opts=sel=>'<option value="">– frei –</option>'+D.recipes.map(r=>`<option value="${r.id}"${r.id===sel?" selected":""}>${r.code} ${esc(r.name.split(" mit ")[0])}</option>`).join("");
+  let rows="";
+  for(let s=0;s<6;s++){const id=a[s];const r=id?R[id]:null;const ck="f|"+s+"|"+(id||"");const on=!!state.cooked.keys[ck];
+    rows+=`<tr><th>${SLOTLBL[s]}<span class="sub">${de(TEILE[s],1)} Teile</span></th><td><select data-assign="${s}" aria-label="Gericht für ${SLOTLBL[s]}">${opts(id)}</select>${r?` <a href="#${r.id}">Rezept</a>`:""}</td><td>${r?`<label class="cookcheck"><input type="checkbox" data-flexcook="${ck}" ${on?"checked":""}> gekocht</label>`:""}</td></tr>`;}
+  const days=["So","Mo","Di","Mi","Do","Fr","Sa"],L=[a[0],a[0],a[0],a[0],a[3],a[3],a[3]],A=[a[1],a[1],a[2],a[2],a[4],a[4],a[5]];
+  const nm=id=>id?`<b>${R[id].code}</b> ${esc(R[id].name.split(" mit ")[0])}`:"–";
+  const week=days.map((d,i)=>`<tr><th>${d}</th><td>${nm(L[i])}</td><td>${nm(A[i])}</td></tr>`).join("");
+  plan.innerHTML=`<div class="tablewrap"><table class="plan"><thead><tr><th>Kochplatz</th><th>Gericht</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+  <h3 class="week">So sieht eure Flexi-Woche aus</h3><div class="tablewrap"><table class="plan"><thead><tr><th>Tag</th><th>Mittag</th><th>Abend</th></tr></thead><tbody>${week}</tbody></table></div>
+  <p class="actions"><a class="btnlink" href="#einkauf" id="toflexshop">Einkaufsliste für die Flexi-Woche</a> <button type="button" class="ghost" data-flexreset>Neue Flexi-Woche starten</button></p>`;
+  const go=$("#toflexshop");if(go)go.onclick=()=>{shopTab="flex";renderShop();};
+}
 
-    async function saveToGitLab() {
-      const cfg = getSyncConfig();
-      if (!cfg.token || !cfg.path) {
-        setStatus('Nicht mit GitLab verbunden (Daten nur lokal).', 'err');
-        return;
-      }
+/* ---------- Gewicht ---------- */
+const P={sie:{name:"Sie",start:62,goalLo:60,goalHi:60,dir:-1,color:"var(--sea)"},er:{name:"Er",start:77,goalLo:80,goalHi:null,dir:1,color:"var(--sunbar)"}};
+function entries(p){const o=state.weights[p]||{};return Object.entries(o).filter(([k,v])=>v&&v.kg).map(([id,v])=>({id,d:v.d,kg:+v.kg})).sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);}
+function progress(p){const c=P[p],e=entries(p);const cur=e.length?e[e.length-1].kg:c.start;
+  let pct,msg;
+  if(c.dir<0){const tgt=c.goalHi;pct=Math.max(0,Math.min(100,(c.start-cur)/(c.start-tgt)*100));
+    msg=cur<=c.goalHi?"Ziel erreicht! 🎉":de(cur-c.goalHi,1)+" kg bis 60 kg";}
+  else{pct=Math.max(0,Math.min(100,(cur-c.start)/(c.goalLo-c.start)*100));msg=cur>=c.goalLo?"Ziel erreicht! 💪":de(c.goalLo-cur,1)+" kg bis 80 kg";}
+  return {cur,pct:Math.round(pct),msg,diff:cur-c.start,n:e.length};
+}
+function badges(p){const c=P[p],e=entries(p),pr=progress(p),out=[];
+  const has=(ok,emo,t)=>out.push(`<span class="badge${ok?" got":""}" title="${t}">${emo}<small>${t}</small></span>`);
+  has(e.length>=1,"📝","Erster Eintrag");
+  const span=e.length>1?(new Date(e[e.length-1].d)-new Date(e[0].d))/864e5:0;
+  has(span>=28,"📆","4 Wochen dran");
+  if(c.dir<0){has(-pr.diff>=0.5,"🥦","−0,5 kg");has(-pr.diff>=1,"🔥","−1 kg");has(-pr.diff>=1.5,"⚡","−1,5 kg");has(pr.cur<=c.goalHi,"🏆","60 kg");}
+  else{has(pr.diff>=1,"🥜","+1 kg");has(pr.diff>=2,"💪","+2 kg");has(pr.cur>=c.goalLo,"🏆","80 kg");}
+  return out.join("");
+}
+function chart(p){
+  const c=P[p],e=entries(p);const narrow=window.innerWidth<560;const W=narrow?340:600,H=narrow?240:230,pl=narrow?30:44,pr=narrow?8:14,pt=14,pb=30;
+  const pts=e.length?e:[{d:new Date().toISOString().slice(0,10),kg:c.start}];
+  const kgs=pts.map(x=>x.kg).concat([c.start,c.goalLo,c.goalHi||c.goalLo]);
+  let lo=Math.floor(Math.min(...kgs)-0.5),hi=Math.ceil(Math.max(...kgs)+0.5);
+  const t0=new Date(pts[0].d).getTime();let t1=new Date(pts[pts.length-1].d).getTime();if(t1-t0<14*864e5)t1=t0+14*864e5;
+  const X=t=>pl+(t-t0)/(t1-t0)*(W-pl-pr),Y=k=>pt+(hi-k)/(hi-lo)*(H-pt-pb);
+  let s=`<svg viewBox="0 0 ${W} ${H}" class="wchart" role="img" aria-label="Gewichtsverlauf ${c.name}">`;
+  for(let k=lo;k<=hi;k++){s+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(k)}" y2="${Y(k)}" class="grid"/><text x="${pl-6}" y="${Y(k)+4}" class="axis" text-anchor="end">${k}</text>`;}
+  if(c.dir<0)s+=`<rect x="${pl}" width="${W-pl-pr}" y="${Y(c.goalHi)}" height="${Math.max(0,H-pb-Y(c.goalHi))}" class="goalband"/><text x="${W-pr-4}" y="${Y(c.goalHi)+14}" class="axis" text-anchor="end">Ziel 60 kg</text>`;
+  else s+=`<rect x="${pl}" width="${W-pl-pr}" y="${pt}" height="${Math.max(0,Y(c.goalLo)-pt)}" class="goalband"/><text x="${W-pr-4}" y="${Y(c.goalLo)-6}" class="axis" text-anchor="end">Ziel ab 80 kg</text>`;
+  s+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(c.start)}" y2="${Y(c.start)}" class="startline"/><text x="${pl+4}" y="${Y(c.start)-5}" class="axis">Start ${de(c.start,1)} kg</text>`;
+  if(e.length){const path=e.map((x,i)=>(i?"L":"M")+X(new Date(x.d).getTime()).toFixed(1)+","+Y(x.kg).toFixed(1)).join(" ");
+    s+=`<path d="${path}" fill="none" stroke="${c.color}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+    e.forEach(x=>{s+=`<circle cx="${X(new Date(x.d).getTime())}" cy="${Y(x.kg)}" r="4.5" fill="${c.color}" stroke="var(--surface)" stroke-width="2"><title>${fmtDate(x.d)}: ${de(x.kg,1)} kg</title></circle>`;});
+    const f=e[0],l=e[e.length-1];s+=`<text x="${pl}" y="${H-8}" class="axis">${fmtDate(f.d)}</text>`;if(e.length>1){const lx=X(new Date(l.d).getTime());s+=`<text x="${lx}" y="${H-8}" class="axis" text-anchor="${lx>W-pr-30?"end":"middle"}">${fmtDate(l.d)}</text>`;}}
+  else s+=`<text x="${W/2}" y="${H/2}" class="axis" text-anchor="middle">Noch keine Einträge</text>`;
+  return s+"</svg>";
+}
+function fmtDate(d){const [y,m,dd]=d.split("-");return dd+"."+m+"."+y.slice(2);}
+function renderWeights(){
+  ["sie","er"].forEach(p=>{const host=$("#w-"+p);if(!host)return;const c=P[p],pr=progress(p),e=entries(p);
+    const trend=e.length?(pr.diff>0?"+":pr.diff<0?"−":"±")+de(Math.abs(pr.diff),1)+" kg seit Start":"Startgewicht "+de(c.start,1)+" kg";
+    const list=e.slice().reverse().slice(0,6).map(x=>`<li><span>${fmtDate(x.d)}</span><b>${de(x.kg,1)} kg</b><button type="button" class="x" data-delw="${p}:${x.id}" aria-label="Eintrag vom ${fmtDate(x.d)} löschen">×</button></li>`).join("");
+    host.querySelector(".wstats").innerHTML=`<div class="wnow">${de(pr.cur,1)}<small> kg</small></div><div class="wtrend">${trend}</div>
+      <div class="track" aria-label="Fortschritt ${pr.pct} Prozent"><div class="trackfill" style="width:${pr.pct}%"></div><span class="runner" style="left:${pr.pct}%">${p==="sie"?"🏃‍♀️":"🏋️"}</span><span class="flag">🏁</span></div>
+      <div class="wmsg"><b>${pr.pct} %</b> geschafft, ${pr.msg}</div>`;
+    host.querySelector(".wchartbox").innerHTML=chart(p);
+    host.querySelector(".badges").innerHTML=badges(p);
+    host.querySelector(".wlist").innerHTML=list||"<li class='muted'>Noch keine Einträge</li>";
+  });
+}
+function addWeight(p,form){
+  const d=form.querySelector("input[type=date]").value,kg=parseFloat(String(form.querySelector("input[type=number]").value).replace(",","."));
+  if(!d||!(kg>30&&kg<200)){form.querySelector(".ferr").textContent="Bitte Datum und ein Gewicht zwischen 30 und 200 kg eingeben.";return;}
+  form.querySelector(".ferr").textContent="";
+  const existing=entries(p).find(x=>x.d===d);const id=existing?existing.id:"e"+Date.now().toString(36);
+  patch("weights",{[p]:{[id]:{d,kg:Math.round(kg*10)/10}}});
+  form.querySelector("input[type=number]").value="";
+}
 
-      setStatus('Prüfe auf neuere Daten vor dem Speichern...', 'sync');
-      try {
-        // 1. Fetch latest version from GitLab to prevent overwriting
-        const getRes = await fetch(`${cfg.url}/api/v4/projects/${cfg.path}/repository/files/data.json?ref=${cfg.branch}`, {
-          headers: { 'PRIVATE-TOKEN': cfg.token }
-        });
+/* ---------- XP ---------- */
+const LEVELS=["Kochlehrlinge","Schnippel-Duo","Meal-Prep-Profis","Tofu-Meister","Kollagen-Champions","Küchen-Legenden"];
+function renderXP(){
+  const cooks=Object.values(state.cooked.keys).filter(Boolean).length;
+  const weighs=entries("sie").length+entries("er").length;
+  let shopsDone=0;["1","2","3","4","flex"].forEach(t=>{const en=t==="flex"?flexEntries():weekEntries(+t);if(!en.length)return;const g=buildList(en);let tot=0,dn=0;CATS.forEach(c=>g[c].forEach(it=>{tot++;if(state.shop.keys[t+"|"+it.key])dn++;}));if(tot&&dn===tot)shopsDone++;});
+  const xp=cooks*10+weighs*5+shopsDone*15;const lvl=Math.min(LEVELS.length-1,Math.floor(xp/60));const into=xp-lvl*60;const pct=lvl===LEVELS.length-1?100:Math.round(into/60*100);
+  const el=$("#xp");if(!el)return;
+  el.innerHTML=`<div class="lvl">Level ${lvl+1}<b>${LEVELS[lvl]}</b></div><div class="bar xpbar"><span style="width:${pct}%"></span></div>
+  <div class="xpnote">${xp} XP${lvl<LEVELS.length-1?", noch "+(60-into)+" XP bis Level "+(lvl+2):""}. Punkte gibt es fürs Kochen (10), Wiegen (5) und komplett abgehakte Einkaufslisten (15).</div>
+  <div class="xpstats"><span>🍳 ${cooks} gekocht</span><span>⚖️ ${weighs} Einträge</span><span>🛒 ${shopsDone} Listen fertig</span></div>`;
+}
 
-        if (getRes.ok) {
-          const fileData = await getRes.json();
-          const remoteContent = JSON.parse(decodeURIComponent(escape(atob(fileData.content))));
-          // Merge local & remote
-          appData = mergeData(remoteContent, appData);
-        }
+let rzT,lastNarrow=window.innerWidth<560;window.addEventListener("resize",()=>{clearTimeout(rzT);rzT=setTimeout(()=>{const n=window.innerWidth<560;if(n!==lastNarrow){lastNarrow=n;renderWeights();}},200);});
+function renderAll(){renderWeights();renderCooked();renderFlex();renderShop();renderXP();}
 
-        appData.updatedAt = Date.now();
-        const jsonString = JSON.stringify(appData, null, 2);
-        const encodedContent = btoa(unescape(encodeURIComponent(jsonString)));
-
-        // 2. Commit back to GitLab
-        const payload = {
-          branch: cfg.branch,
-          commit_message: 'Update data.json via Web App (Auto-Merge)',
-          content: encodedContent,
-          encoding: 'base64'
-        };
-
-        // Try PUT (update), if 404 try POST (create)
-        let putRes = await fetch(`${cfg.url}/api/v4/projects/${cfg.path}/repository/files/data.json`, {
-          method: 'PUT',
-          headers: {
-            'PRIVATE-TOKEN': cfg.token,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (putRes.status === 404) {
-          putRes = await fetch(`${cfg.url}/api/v4/projects/${cfg.path}/repository/files/data.json`, {
-            method: 'POST',
-            headers: {
-              'PRIVATE-TOKEN': cfg.token,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-          });
-        }
-
-        if (putRes.ok) {
-          renderUI();
-          setStatus('Gespeichert in GitLab um ' + new Date().toLocaleTimeString(), 'ok');
-        } else {
-          setStatus('Fehler beim Speichern in GitLab.', 'err');
-        }
-      } catch (err) {
-        console.error(err);
-        setStatus('Netzwerkfehler beim Speichern.', 'err');
-      }
-    }
-
-    // Smart merge arrays based on unique timestamp/id
-    function mergeData(local, remote) {
-      const mergedWeights = [...(local.weights || [])];
-      (remote.weights || []).forEach(rItem => {
-        if (!mergedWeights.some(lItem => lItem.timestamp === rItem.timestamp)) {
-          mergedWeights.push(rItem);
-        }
-      });
-      mergedWeights.sort((a, b) => b.timestamp - a.timestamp);
-
-      const mergedNotes = [...(local.notes || [])];
-      (remote.notes || []).forEach(rItem => {
-        if (!mergedNotes.some(lItem => lItem.timestamp === rItem.timestamp)) {
-          mergedNotes.push(rItem);
-        }
-      });
-      mergedNotes.sort((a, b) => b.timestamp - a.timestamp);
-
-      return {
-        weights: mergedWeights,
-        notes: mergedNotes,
-        updatedAt: Math.max(local.updatedAt || 0, remote.updatedAt || 0)
-      };
-    }
-
-    // UI Logic
-    function addWeight() {
-      const input = document.getElementById('input-weight');
-      const val = parseFloat(input.value);
-      if (isNaN(val)) return;
-
-      appData.weights.unshift({
-        value: val,
-        timestamp: Date.now(),
-        dateStr: new Date().toLocaleDateString('de-DE')
-      });
-
-      input.value = '';
-      renderUI();
-      saveToGitLab();
-    }
-
-    function addNote() {
-      const input = document.getElementById('input-note');
-      const text = input.value.trim();
-      if (!text) return;
-
-      appData.notes.unshift({
-        text: text,
-        timestamp: Date.now(),
-        dateStr: new Date().toLocaleDateString('de-DE')
-      });
-
-      input.value = '';
-      renderUI();
-      saveToGitLab();
-    }
-
-    function renderUI() {
-      const wList = document.getElementById('list-weights');
-      wList.innerHTML = appData.weights.length ? '' : '<li><em>Noch keine Gewichte eingetragen.</em></li>';
-      appData.weights.forEach(w => {
-        const li = document.createElement('li');
-        li.innerText = `${w.dateStr}: ${w.value} kg`;
-        wList.appendChild(li);
-      });
-
-      const nList = document.getElementById('list-notes');
-      nList.innerHTML = appData.notes.length ? '' : '<li><em>Noch keine Notizen vorhanden.</em></li>';
-      appData.notes.forEach(n => {
-        const li = document.createElement('li');
-        li.innerText = `${n.dateStr}: ${n.text}`;
-        nList.appendChild(li);
-      });
-    }
-
-    // Auto sync in background every 60 seconds
-    setInterval(() => {
-      if (localStorage.getItem('gl_token')) {
-        syncFromGitLab();
-      }
-    }, 60000);
-  </script>
+document.addEventListener("DOMContentLoaded",()=>{
+  const today=new Date().toISOString().slice(0,10);
+  $$(".wform").forEach(f=>{f.querySelector("input[type=date]").value=today;f.addEventListener("submit",ev=>{ev.preventDefault();addWeight(f.dataset.p,f);});});
+  loadLocal();renderAll();bindSyncBox();initDb();
+});
+})();
+</script>
 </body>
 </html>
